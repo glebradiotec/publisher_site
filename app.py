@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
 
-from flask import Flask
+from flask import Flask, redirect, url_for, request
 from flask_compress import Compress
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 
 from models import db, User, Journal, Issue, Article
 from routes_public import register_public_routes
@@ -36,17 +36,40 @@ app.config['UPLOAD_PDFS'] = UPLOAD_PDFS
 os.makedirs(UPLOAD_COVERS, exist_ok=True)
 os.makedirs(UPLOAD_PDFS, exist_ok=True)
 
-# Flask-Login (только для админки)
+# Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'admin_login'
-login_manager.login_message = 'Войдите в систему для доступа к админ-панели.'
+login_manager.login_message = 'Войдите в систему для доступа.'
 login_manager.login_message_category = 'info'
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+# ============================================================
+#   ЗАКРЫТЫЙ РЕЖИМ: весь сайт требует авторизации.
+#   Чтобы открыть сайт для всех — установите SITE_PUBLIC=1
+#   или удалите/закомментируйте этот блок.
+# ============================================================
+SITE_PUBLIC = os.environ.get('SITE_PUBLIC', '0') == '1'
+
+
+@app.before_request
+def require_login():
+    """Если сайт не публичный — требуем авторизацию на всех страницах."""
+    if SITE_PUBLIC:
+        return  # сайт открыт для всех
+
+    # Пропускаем без проверки: страницу логина, статику, logout
+    if request.endpoint and request.endpoint in ('admin_login', 'static'):
+        return
+
+    # Если не авторизован — на страницу входа (с сохранением куда шёл)
+    if not current_user.is_authenticated:
+        return redirect(url_for('admin_login', next=request.path))
 
 
 # Инициализация БД и маршрутов

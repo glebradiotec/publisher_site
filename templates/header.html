@@ -19,44 +19,23 @@
 
             <!-- Right side -->
             <div class="flex items-center gap-3">
-                <!-- Login button + dropdown -->
-                <div class="relative" id="login-container">
-                    <button id="login-toggle" class="hidden sm:flex text-sm font-bold text-text-main [data-theme=dark]:text-white hover:text-primary px-3 py-2 rounded-lg hover:bg-gray-50 [data-theme=dark]:hover:bg-white/5 transition-all cursor-pointer" style="background:none; border:none;">
-                        Войти
-                    </button>
-
-                    <!-- Login dropdown -->
-                    <div id="login-dropdown" style="display:none; position:absolute; right:0; top:calc(100% + 8px); z-index:100; width:300px;">
-                        <div style="background:white; border-radius:16px; box-shadow:0 20px 60px -10px rgba(0,0,0,0.15); border:1px solid rgba(0,0,0,0.06); padding:24px; position:relative;">
-                            <!-- Arrow -->
-                            <div style="position:absolute; top:-6px; right:20px; width:12px; height:12px; background:white; border-left:1px solid rgba(0,0,0,0.06); border-top:1px solid rgba(0,0,0,0.06); transform:rotate(45deg);"></div>
-
-                            <h3 style="margin:0 0 16px 0; font-size:16px; font-weight:700; text-align:center; color:#0f172a;" class="font-display">Вход в панель</h3>
-
-                            <form method="post" action="/admin/login" id="login-form">
-                                <div style="margin-bottom:12px;">
-                                    <input type="text" name="username" placeholder="Логин" required
-                                           style="width:100%; padding:10px 14px; border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; transition:border-color 0.2s; background:#f8fafc; box-sizing:border-box;"
-                                           onfocus="this.style.borderColor='#0D9488'; this.style.background='#fff';"
-                                           onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc';">
-                                </div>
-                                <div style="margin-bottom:16px;">
-                                    <input type="password" name="password" placeholder="Пароль" required
-                                           style="width:100%; padding:10px 14px; border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; transition:border-color 0.2s; background:#f8fafc; box-sizing:border-box;"
-                                           onfocus="this.style.borderColor='#0D9488'; this.style.background='#fff';"
-                                           onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc';">
-                                </div>
-                                <div id="login-error" style="display:none; color:#dc2626; font-size:13px; font-weight:600; text-align:center; margin-bottom:12px;"></div>
-                                <button type="submit"
-                                        style="width:100%; padding:10px; background:#0D9488; color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; transition:background 0.2s;"
-                                        onmouseenter="this.style.background='#115E59'"
-                                        onmouseleave="this.style.background='#0D9488'">
-                                    Войти
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                {% if current_user.is_authenticated %}
+                <!-- Авторизован: CMS + Выйти -->
+                <a href="/admin" class="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-text-main/70 [data-theme=dark]:text-gray-300 hover:text-primary px-3 py-2 rounded-lg hover:bg-gray-50 [data-theme=dark]:hover:bg-white/5 transition-all no-underline">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="6" y1="5" x2="10" y2="5"/><line x1="6" y1="8" x2="10" y2="8"/><line x1="6" y1="11" x2="8" y2="11"/></svg>
+                    CMS
+                </a>
+                <a href="/admin/logout" class="hidden sm:flex items-center gap-1.5 text-sm font-bold text-red-500/80 hover:text-red-600 px-3 py-2 rounded-lg hover:bg-red-50 [data-theme=dark]:hover:bg-red-500/10 transition-all no-underline">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><polyline points="10 11 14 8 10 5"/><line x1="14" y1="8" x2="6" y2="8"/></svg>
+                    Выйти
+                </a>
+                {% else %}
+                <!-- Не авторизован: Войти -->
+                <a href="/admin/login" class="hidden sm:flex items-center gap-1.5 text-sm font-bold text-text-main [data-theme=dark]:text-white hover:text-primary px-3 py-2 rounded-lg hover:bg-gray-50 [data-theme=dark]:hover:bg-white/5 transition-all no-underline">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14h3a1 1 0 001-1V3a1 1 0 00-1-1h-3"/><polyline points="6 11 2 8 6 5"/><line x1="2" y1="8" x2="10" y2="8"/></svg>
+                    Войти
+                </a>
+                {% endif %}
 
                 <button id="theme-toggle" class="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-200 [data-theme=dark]:border-gray-700 hover:border-primary hover:text-primary transition-colors bg-white/50 [data-theme=dark]:bg-surface-dark/50" title="Переключить тему">
                     <span id="theme-icon" class="material-symbols-outlined text-[20px]">dark_mode</span>
@@ -69,25 +48,6 @@
 <style>
     .lang-btn:hover { opacity: 0.8 !important; }
     .lang-btn.active { opacity: 1 !important; }
-
-    [data-theme="dark"] #login-dropdown > div {
-        background: #1e293b !important;
-        border-color: rgba(255,255,255,0.1) !important;
-    }
-    [data-theme="dark"] #login-dropdown > div > div:first-child {
-        background: #1e293b !important;
-        border-color: rgba(255,255,255,0.1) !important;
-    }
-    [data-theme="dark"] #login-dropdown h3 { color: #fff !important; }
-    [data-theme="dark"] #login-dropdown input {
-        background: #0f172a !important;
-        border-color: #334155 !important;
-        color: #fff !important;
-    }
-    [data-theme="dark"] #login-dropdown input:focus {
-        border-color: #0D9488 !important;
-        background: #1e293b !important;
-    }
 </style>
 
 <script>
@@ -126,64 +86,4 @@
         }
     })();
 
-    // Login dropdown
-    (function() {
-        var toggle = document.getElementById('login-toggle');
-        var dropdown = document.getElementById('login-dropdown');
-        var form = document.getElementById('login-form');
-        var errorEl = document.getElementById('login-error');
-        if (!toggle || !dropdown) return;
-
-        toggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            var open = dropdown.style.display !== 'none';
-            dropdown.style.display = open ? 'none' : 'block';
-            if (!open) {
-                setTimeout(function() { form.querySelector('input[name="username"]').focus(); }, 50);
-            }
-        });
-
-        // Close on click outside
-        document.addEventListener('click', function(e) {
-            if (!document.getElementById('login-container').contains(e.target)) {
-                dropdown.style.display = 'none';
-            }
-        });
-
-        // Close on Escape
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') dropdown.style.display = 'none';
-        });
-
-        // AJAX submit
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            errorEl.style.display = 'none';
-            var formData = new FormData(form);
-
-            fetch('/admin/login', {
-                method: 'POST',
-                body: formData,
-                redirect: 'follow'
-            }).then(function(resp) {
-                if (resp.redirected) {
-                    window.location.href = resp.url;
-                } else {
-                    return resp.text().then(function(html) {
-                        if (html.indexOf('Неверный') !== -1 || html.indexOf('error') !== -1) {
-                            errorEl.textContent = 'Неверный логин или пароль';
-                            errorEl.style.display = 'block';
-                            form.querySelector('input[name="password"]').value = '';
-                            form.querySelector('input[name="password"]').focus();
-                        } else {
-                            window.location.href = '/admin';
-                        }
-                    });
-                }
-            }).catch(function() {
-                errorEl.textContent = 'Ошибка соединения';
-                errorEl.style.display = 'block';
-            });
-        });
-    })();
 </script>

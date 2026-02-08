@@ -382,6 +382,7 @@
                 if (href.startsWith('#')) return false;
                 if (!href.startsWith('/') && !href.startsWith('?')) return false;
                 if (href.indexOf('/logout') !== -1) return false;
+                if (href.indexOf('/admin/login') !== -1) return false;
                 if (href.indexOf('/download') !== -1) return false;
                 if (href.indexOf('/uploads/') !== -1) return false;
                 if (href.indexOf('.pdf') !== -1) return false;

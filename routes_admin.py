@@ -97,17 +97,18 @@ def register_admin_routes(app):
     # ==================== AUTH ====================
     @app.route('/admin/login', methods=['GET', 'POST'])
     def admin_login():
+        next_url = request.args.get('next') or request.form.get('next') or url_for('index')
         if current_user.is_authenticated:
-            return redirect(url_for('admin_dashboard'))
+            return redirect(next_url)
         if request.method == 'POST':
             username = request.form.get('username', '').strip()
             password = request.form.get('password', '')
             user = User.query.filter_by(username=username).first()
             if user and user.is_active_user and user.check_password(password):
                 login_user(user, remember=True)
-                return redirect(url_for('admin_dashboard'))
+                return redirect(next_url)
             flash('Неверный логин или пароль', 'error')
-        return render_template('admin/login.html')
+        return render_template('admin/login.html', next_url=next_url)
 
     @app.route('/admin/logout')
     @login_required

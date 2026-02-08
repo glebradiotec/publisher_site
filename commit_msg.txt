@@ -1,8 +1,0 @@
-Add site-wide auth, standalone login page, admin improvements
-
-- Site-wide auth gate (SITE_PUBLIC=1 to disable)
-- Standalone login page with dark mode, password toggle, animations
-- Header: login/logout/CMS buttons based on auth state
-- Admin sidebar: Tailwind rewrite, home button
-- Post-login redirect to original page (next param)
-- SPA router: exclude /admin/login and /logout

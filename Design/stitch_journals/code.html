@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SciPub - Journals</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0D9488", // Teal 600
+                        "primary-soft": "#5EEAD4", // Teal 300
+                        "primary-dark": "#115E59", // Teal 800
+                        "accent": "#0EA5E9", // Sky 500
+                        "accent-dark": "#0369A1", // Sky 700
+                        "secondary": "#06B6D4", // Cyan 500
+                        "background-light": "#F0FDFA", // Azure/Mint off-white
+                        "background-dark": "#0F172A", // Slate 900
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1E293B", // Slate 800
+                        "text-main": "#0F172A", // Slate 900
+                        "text-muted": "#475569", // Slate 600
+                        "soft-teal": "#CCFBF1", // Teal 100
+                        "soft-cyan": "#CFFAFE", // Cyan 100
+                        "soft-blue": "#E0F2FE", // Sky 100
+                        "ocean-blue": "#1E3A8A", // Blue 900
+                    },
+                    fontFamily: {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "3xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(13, 148, 136, 0.1)',
+                        'glow': '0 0 20px rgba(13, 148, 136, 0.3)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #99f6e4; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5eead4; 
+        }
+        .journal-card {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .journal-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -5px rgba(13, 148, 136, 0.15), 0 10px 10px -6px rgba(0, 0, 0, 0.01);
+            border-color: rgba(13, 148, 136, 0.3);
+        }
+        .blob-shape {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #0D9488 0%, #0284C7 50%, #1E3A8A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-body text-text-main antialiased selection:bg-primary-soft selection:text-white overflow-x-hidden">
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="blob-shape bg-soft-teal w-[500px] h-[500px] rounded-full -top-20 -left-20 animate-pulse" style="animation-duration: 10s;"></div>
+<div class="blob-shape bg-soft-cyan w-[400px] h-[400px] rounded-full top-40 right-0 opacity-40"></div>
+<div class="blob-shape bg-soft-blue w-[600px] h-[600px] rounded-full -bottom-40 left-1/3 opacity-30"></div>
+</div>
+<header class="sticky top-4 z-50 w-full px-4 sm:px-6 lg:px-8">
+<div class="max-w-[1200px] mx-auto bg-white/70 dark:bg-surface-dark/70 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-2xl shadow-sm">
+<div class="flex h-16 items-center justify-between px-4 sm:px-6">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[24px]">science</span>
+</div>
+<span class="text-xl font-display font-bold tracking-tight text-text-main dark:text-white">SciPub</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-semibold text-primary hover:text-primary-dark transition-colors dark:text-white" href="#">Journals</a>
+<a class="text-sm font-semibold text-text-main/70 hover:text-primary transition-colors dark:text-gray-300" href="#">Books</a>
+<a class="text-sm font-semibold text-text-main/70 hover:text-primary transition-colors dark:text-gray-300" href="#">Submit Work</a>
+<a class="text-sm font-semibold text-text-main/70 hover:text-primary transition-colors dark:text-gray-300" href="#">Our Story</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="hidden sm:flex text-sm font-bold text-text-main dark:text-white hover:text-primary px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
+                        Log In
+                    </button>
+<button class="flex items-center justify-center rounded-xl bg-primary text-white px-5 py-2.5 text-sm font-bold hover:bg-ocean-blue hover:shadow-lg hover:shadow-primary/25 transition-all transform hover:-translate-y-0.5">
+                        Get Started
+                    </button>
+</div>
+</div>
+</div>
+</header>
+<main class="relative z-10 pt-8 pb-24">
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<a class="text-sm text-text-muted hover:text-primary transition-colors" href="#">Home</a>
+<span class="text-text-muted/50">/</span>
+<span class="text-sm font-semibold text-primary">Journals</span>
+</div>
+<h1 class="font-display text-4xl md:text-5xl font-bold text-text-main dark:text-white">Our Journals <span class="bg-primary/10 text-primary text-xl px-3 py-1 rounded-full align-middle ml-2 font-body">14</span></h1>
+</div>
+<div class="w-full md:w-auto">
+<div class="relative group min-w-[300px]">
+<div class="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-accent/30 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+<div class="relative flex items-center bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+<div class="pl-3 text-text-muted">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full border-none bg-transparent px-3 py-2.5 text-sm text-text-main dark:text-white placeholder-text-muted/60 focus:ring-0 font-medium" placeholder="Quick filter by name or ISSN..." type="text"/>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-2xl p-6 mb-12 shadow-sm">
+<div class="flex flex-wrap items-center gap-6 md:gap-12 text-sm font-medium text-text-muted dark:text-gray-300">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">library_books</span>
+<span class="text-text-main dark:text-white font-bold">14</span> Journals
+            </div>
+<div class="w-px h-4 bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-accent">article</span>
+<span class="text-text-main dark:text-white font-bold">150+</span> Monthly Articles
+            </div>
+<div class="w-px h-4 bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span>Peer Reviewed</span>
+</div>
+<div class="w-px h-4 bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-teal-500">lock_open</span>
+<span>Open Access Available</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-soft-teal/50 to-transparent rounded-bl-full opacity-50 dark:from-primary/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-teal-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent">settings_input_antenna</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-primary transition-colors">Antennas</h3>
+<span class="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Engineering</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 0320-9601</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Focusing on advanced antenna theory, design, and wave propagation analysis.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            6 Issues
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            13 Articles
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-soft-blue/50 to-transparent rounded-bl-full opacity-50 dark:from-accent/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-blue-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-blue-500 to-indigo-500">biotech</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-accent transition-colors">Biomedical Electronics</h3>
+<span class="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Medicine</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 2074-4118</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Intersection of electronics and medicine: devices, imaging, and diagnostic systems.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            1 Issue
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            1 Article
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-soft-cyan/50 to-transparent rounded-bl-full opacity-50 dark:from-secondary/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-cyan-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-secondary to-teal-500">hub</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-secondary transition-colors">Complex Systems Dynamics</h3>
+<span class="bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Physics</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 2220-3510</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Analyzing non-linear dynamics, chaos theory, and self-organization in systems.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            1 Issue
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            1 Article
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-purple-100/50 to-transparent rounded-bl-full opacity-50 dark:from-purple-900/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-purple-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-purple-500 to-indigo-500">speed</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-purple-600 transition-colors">Information &amp; Control</h3>
+<span class="bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">IT &amp; Systems</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 1996-5981</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Information measurement systems, control theory, and automated management.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            4 Issues
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            8 Articles
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-sky-100/50 to-transparent rounded-bl-full opacity-50 dark:from-sky-900/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-sky-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-sky-500 to-primary">science</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-sky-600 transition-colors">Nanotechnologies</h3>
+<span class="bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Materials</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 2075-1417</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Development, application, and research in 21st-century nanomaterials.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            3 Issues
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            9 Articles
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-indigo-100/50 to-transparent rounded-bl-full opacity-50 dark:from-indigo-900/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-indigo-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-purple-500">rocket_launch</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-indigo-600 transition-colors">High-Tech Technologies</h3>
+<span class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Applied Sci</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 2220-3508</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Cutting-edge research in aerospace, advanced manufacturing, and robotics.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            2 Issues
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            5 Articles
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-orange-100/50 to-transparent rounded-bl-full opacity-50 dark:from-orange-900/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-orange-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-orange-500 to-red-500">waves</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-orange-600 transition-colors">Nonlinear World</h3>
+<span class="bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Physics</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 2073-4407</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Exploring complex phenomena and nonlinear systems in nature and technology.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            1 Issue
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            2 Articles
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-green-100/50 to-transparent rounded-bl-full opacity-50 dark:from-green-900/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-green-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-green-500 to-teal-500">memory</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-green-600 transition-colors">Neurocomputers</h3>
+<span class="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">AI &amp; Bio</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 2073-0565</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Development and application of neural networks and bio-inspired computing.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            3 Issues
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            10 Articles
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-rose-100/50 to-transparent rounded-bl-full opacity-50 dark:from-rose-900/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-rose-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-rose-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-rose-500 to-red-500">radio</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-rose-600 transition-colors">Radio Engineering</h3>
+<span class="bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Engineering</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 0033-8494</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Fundamental research in radio frequency technology and communication systems.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            6 Issues
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            18 Articles
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-2xl border border-teal-100 dark:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-amber-100/50 to-transparent rounded-bl-full opacity-50 dark:from-amber-900/10 pointer-events-none"></div>
+<div class="shrink-0">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-50 to-white dark:from-gray-800 dark:to-surface-dark shadow-inner border border-amber-50 dark:border-gray-700 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br from-amber-500 to-yellow-500">cloud_done</span>
+</div>
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display text-xl font-bold text-text-main dark:text-white group-hover:text-amber-600 transition-colors">High Availability Systems</h3>
+<span class="bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Computing</span>
+</div>
+<p class="text-xs font-mono text-text-muted mb-4">ISSN: 2072-0505</p>
+<p class="text-sm text-text-muted dark:text-gray-400 mb-6 line-clamp-2">Reliability engineering, fault tolerance, and system uptime optimization.</p>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted">
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            2 Issues
+                        </span>
+<span class="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            6 Articles
+                        </span>
+<div class="ml-auto">
+<button class="text-primary hover:text-accent font-bold flex items-center gap-1 transition-colors">
+                                Visit <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-white dark:bg-surface-dark border-t border-gray-100 dark:border-gray-800 pt-16 pb-12 relative z-10">
+<div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10 mb-16">
+<div class="col-span-2 lg:col-span-2 pr-8">
+<div class="flex items-center gap-2 mb-6">
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">science</span>
+</div>
+<span class="text-xl font-bold font-display text-text-main dark:text-white">SciPub</span>
+</div>
+<p class="text-text-muted dark:text-gray-400 max-w-sm mb-8 font-medium leading-relaxed">
+                        We are empowering the scientific community with friendlier tools for discovery and dissemination. Science is for everyone.
+                    </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-text-muted hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[20px]">public</span></a>
+<a class="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-text-muted hover:bg-accent hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[20px]">share</span></a>
+<a class="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-text-muted hover:bg-secondary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[20px]">mail</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-text-main dark:text-white mb-6 text-lg">Journals</h4>
+<ul class="space-y-3 text-sm font-medium text-text-muted dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Life Sciences</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Physical Sciences</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Health Sciences</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Social Sciences</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-text-main dark:text-white mb-6 text-lg">Resources</h4>
+<ul class="space-y-3 text-sm font-medium text-text-muted dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors block py-1" href="#">For Authors</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">For Editors</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">For Librarians</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Open Access Policy</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-text-main dark:text-white mb-6 text-lg">Company</h4>
+<ul class="space-y-3 text-sm font-medium text-text-muted dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Our Story</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Newsroom</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Contact Us</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm font-medium text-text-muted dark:text-gray-500">
+<p>© 2024 SciPub Inc. Crafted with care.</p>
+<div class="flex gap-8">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Cookie Settings</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

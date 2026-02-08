@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ru" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function(){
+            var t = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+            if (t === 'dark') document.documentElement.classList.add('dark');
+        })();
+    </script>
+    <title>{% block title %}Издательство{% endblock %}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['selector', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0D9488",
+                        "primary-soft": "#5EEAD4",
+                        "primary-dark": "#115E59",
+                        "accent": "#0EA5E9",
+                        "accent-dark": "#0369A1",
+                        "secondary": "#06B6D4",
+                        "background-light": "#F8FAFF",
+                        "background-dark": "#0F172A",
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1E293B",
+                        "text-main": "#0F172A",
+                        "text-muted": "#475569",
+                        "soft-teal": "#E0F2FE",
+                        "soft-cyan": "#DBEAFE",
+                        "soft-blue": "#EEF2FF",
+                        "ocean-blue": "#1E3A8A",
+                    },
+                    fontFamily: {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "3xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(13, 148, 136, 0.1)',
+                        'glow': '0 0 20px rgba(13, 148, 136, 0.3)',
+                    }
+                },
+            },
+            corePlugins: {
+                preflight: false,
+            },
+        }
+    </script>
+
+    <!-- Bootstrap (for admin & legacy pages) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        html { background: var(--color-canvas-default); scrollbar-gutter: stable; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #99f6e4; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5eead4; }
+
+        /* Page entrance animation */
+        .page-wrap {
+            opacity: 0;
+            transform: translateY(18px);
+            animation: pageSlideUp 0.3s ease-out 0.04s forwards;
+        }
+        .page-wrap.no-anim { opacity: 1; transform: none; animation: none; }
+
+        @keyframes pageSlideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SPA progress bar */
+        #spa-progress {
+            position: fixed; top: 0; left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0D9488, #0EA5E9);
+            z-index: 10001; width: 0; opacity: 0;
+            pointer-events: none; border-radius: 0 2px 2px 0;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            display: flex; align-items: center; gap: 6px;
+            padding: 0; margin: 0 0 20px 0; list-style: none;
+            font-size: 13px; font-weight: 500; flex-wrap: wrap;
+        }
+        .breadcrumbs li { display: flex; align-items: center; gap: 6px; }
+        .breadcrumbs li + li::before {
+            content: ''; display: inline-block; width: 16px; height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%238b949e' d='M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z'/%3E%3C/svg%3E");
+            background-size: contain; flex-shrink: 0; opacity: 0.6;
+        }
+        .breadcrumbs a { color: #0D9488; text-decoration: none; }
+        .breadcrumbs a:hover { text-decoration: underline; }
+        .breadcrumbs .breadcrumb-current { color: var(--color-fg-muted); }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed; top: 24px; right: 24px; z-index: 11000;
+            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .toast-notification {
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 22px; font-size: 14px; font-weight: 500;
+            border-radius: 12px; pointer-events: auto; cursor: pointer;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.1);
+            animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 380px;
+        }
+        .toast-notification.toast-hiding { animation: toastSlideOut 0.25s ease forwards; }
+        .toast-notification svg { flex-shrink: 0; }
+        .toast-success { background: linear-gradient(135deg, #1a7f37 0%, #166b2d 100%); color: #fff; }
+        .toast-error { background: linear-gradient(135deg, #cf222e 0%, #a40e26 100%); color: #fff; }
+        .toast-info { background: linear-gradient(135deg, #0D9488 0%, #115E59 100%); color: #fff; }
+
+        @keyframes toastSlideIn {
+            from { opacity: 0; transform: translateX(40px) scale(0.96); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes toastSlideOut {
+            to { opacity: 0; transform: translateX(40px) scale(0.96); }
+        }
+
+        /* Blob shapes */
+        .blob-shape {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* Journal card hover */
+        .journal-card {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .journal-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 30px -5px rgba(13, 148, 136, 0.1), 0 10px 10px -6px rgba(0, 0, 0, 0.01);
+        }
+
+        /* Carousel */
+        .carousel-container {
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            padding-bottom: 2rem;
+        }
+        .carousel-container::-webkit-scrollbar { display: none; }
+        .carousel-item { scroll-snap-align: center; }
+
+        /* Stat counters — fixed-width digits to prevent layout shift */
+        .stat-value {
+            font-variant-numeric: tabular-nums;
+            display: inline-block;
+        }
+
+        /* Logo — transparent background via blend mode */
+        .logo-img {
+            mix-blend-mode: multiply;
+        }
+        [data-theme="dark"] .logo-img {
+            filter: brightness(0) invert(1);
+            mix-blend-mode: normal;
+        }
+
+        /* Gradient text */
+        .text-gradient {
+            background: linear-gradient(135deg, #0D9488 0%, #0284C7 50%, #1E3A8A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-background-light [data-theme=dark]:bg-background-dark font-body text-text-main antialiased selection:bg-primary-soft selection:text-white overflow-x-hidden {% block body_class %}{% endblock %}">
+    <!-- Background blobs (only on public pages) -->
+    {% block background_blobs %}
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="blob-shape bg-soft-teal w-[500px] h-[500px] rounded-full -top-20 -left-20 animate-pulse" style="animation-duration: 10s;"></div>
+        <div class="blob-shape bg-soft-cyan w-[400px] h-[400px] rounded-full top-40 right-0 opacity-40"></div>
+        <div class="blob-shape bg-soft-blue w-[600px] h-[600px] rounded-full -bottom-40 left-1/3 opacity-30"></div>
+    </div>
+    {% endblock %}
+
+    <div id="spa-progress"></div>
+    <div id="toast-container" class="toast-container"></div>
+    <div class="page-wrap">
+        {% include 'header.html' %}
+
+        <!-- Publisher banner -->
+        {% block publisher_banner %}
+        <div class="relative z-10 mt-6 mb-2 overflow-hidden" style="mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);">
+            <div class="relative w-full bg-white/60 [data-theme=dark]:bg-surface-dark/60 backdrop-blur-sm" style="min-height:80px;">
+                <!-- Geometric pattern background -->
+                <svg class="absolute inset-0 w-full h-full opacity-[0.06] [data-theme=dark]:opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="net" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                            <circle cx="30" cy="30" r="1.5" fill="#0D9488"/>
+                            <line x1="30" y1="30" x2="60" y2="0" stroke="#0D9488" stroke-width="0.5"/>
+                            <line x1="30" y1="30" x2="0" y2="0" stroke="#0D9488" stroke-width="0.5"/>
+                            <line x1="30" y1="30" x2="60" y2="60" stroke="#0D9488" stroke-width="0.5"/>
+                            <line x1="30" y1="30" x2="0" y2="60" stroke="#0D9488" stroke-width="0.5"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#net)"/>
+                </svg>
+                <!-- Top/bottom fade edges -->
+                <div class="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-background-light [data-theme=dark]:from-background-dark to-transparent z-[5]"></div>
+                <div class="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-background-light [data-theme=dark]:from-background-dark to-transparent z-[5]"></div>
+                <div class="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-5" style="min-height:80px;">
+                    <!-- Logo left -->
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="Логотип" class="h-16 sm:h-20 object-contain logo-img absolute left-4 sm:left-6 lg:left-8 top-1/2" style="max-width:120px; transform:translateY(-50%);">
+                    <!-- Title centered on page -->
+                    <div class="text-center">
+                        <div class="text-gradient text-xs sm:text-sm font-bold uppercase" style="letter-spacing:0.2em;">Издательство</div>
+                        <div class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-text-main [data-theme=dark]:text-white" style="line-height:1.1;">РАДИОТЕХНИКА</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        <main id="main-content" class="relative z-10">
+            {% block content %}{% endblock %}
+        </main>
+
+        {% block footer %}
+        <footer class="bg-white [data-theme=dark]:bg-surface-dark border-t border-gray-100 [data-theme=dark]:border-gray-800 pt-16 pb-12 relative z-10">
+            <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10 mb-16">
+                    <!-- Logo & description -->
+                    <div class="col-span-2 lg:col-span-2 pr-8">
+                        <div class="flex items-center gap-2 mb-6">
+                            <img src="{{ url_for('static', filename='logo.png') }}" alt="Логотип" class="h-8 object-contain logo-img" style="max-width:40px;">
+                            <span class="text-xl font-bold font-display text-text-main [data-theme=dark]:text-white">Издательство</span>
+                        </div>
+                        <p class="text-text-muted [data-theme=dark]:text-gray-400 max-w-sm mb-8 font-medium leading-relaxed m-0">
+                            Платформа для публикации и распространения научных исследований. Наука доступна каждому.
+                        </p>
+                        <div class="flex gap-4">
+                            <a class="w-10 h-10 rounded-full bg-gray-50 [data-theme=dark]:bg-white/5 flex items-center justify-center text-text-muted hover:bg-primary hover:text-white transition-all no-underline" href="#"><span class="material-symbols-outlined text-[20px]">public</span></a>
+                            <a class="w-10 h-10 rounded-full bg-gray-50 [data-theme=dark]:bg-white/5 flex items-center justify-center text-text-muted hover:bg-accent hover:text-white transition-all no-underline" href="#"><span class="material-symbols-outlined text-[20px]">share</span></a>
+                            <a class="w-10 h-10 rounded-full bg-gray-50 [data-theme=dark]:bg-white/5 flex items-center justify-center text-text-muted hover:bg-secondary hover:text-white transition-all no-underline" href="#"><span class="material-symbols-outlined text-[20px]">mail</span></a>
+                        </div>
+                    </div>
+                    <!-- Navigation -->
+                    <div>
+                        <h4 class="font-bold text-text-main [data-theme=dark]:text-white mb-6 text-lg m-0">Журналы</h4>
+                        <ul class="space-y-3 text-sm font-medium text-text-muted [data-theme=dark]:text-gray-400 list-none m-0 p-0">
+                            <li class="m-0"><a class="hover:text-primary transition-colors block py-1 no-underline" href="/journals">Все журналы</a></li>
+                            <li class="m-0"><a class="hover:text-primary transition-colors block py-1 no-underline" href="/search">Поиск статей</a></li>
+                        </ul>
+                    </div>
+                    <!-- Resources -->
+                    <div>
+                        <h4 class="font-bold text-text-main [data-theme=dark]:text-white mb-6 text-lg m-0">Для авторов</h4>
+                        <ul class="space-y-3 text-sm font-medium text-text-muted [data-theme=dark]:text-gray-400 list-none m-0 p-0">
+                            <li class="m-0"><a class="hover:text-primary transition-colors block py-1 no-underline" href="#">Правила оформления</a></li>
+                            <li class="m-0"><a class="hover:text-primary transition-colors block py-1 no-underline" href="#">Рецензирование</a></li>
+                            <li class="m-0"><a class="hover:text-primary transition-colors block py-1 no-underline" href="#">Открытый доступ</a></li>
+                        </ul>
+                    </div>
+                    <!-- Company -->
+                    <div>
+                        <h4 class="font-bold text-text-main [data-theme=dark]:text-white mb-6 text-lg m-0">Контакты</h4>
+                        <ul class="space-y-3 text-sm font-medium text-text-muted [data-theme=dark]:text-gray-400 list-none m-0 p-0">
+                            <li class="m-0"><a class="hover:text-primary transition-colors block py-1 no-underline" href="#">О нас</a></li>
+                            <li class="m-0"><a class="hover:text-primary transition-colors block py-1 no-underline" href="#">Контакты</a></li>
+                            <li class="m-0"><a class="hover:text-primary transition-colors block py-1 no-underline" href="/admin/login">Для редакторов</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-100 [data-theme=dark]:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm font-medium text-text-muted [data-theme=dark]:text-gray-500">
+                    <p class="m-0">&copy; {{ now().year if now is defined else 2026 }} Издательство. Все права защищены.</p>
+                    <div class="flex gap-8">
+                        <a class="hover:text-primary transition-colors no-underline" href="#">Политика конфиденциальности</a>
+                        <a class="hover:text-primary transition-colors no-underline" href="#">Пользовательское соглашение</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script>
+        // ========== Global Toast System ==========
+        (function() {
+            var ICONS = {
+                success: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"/></svg>',
+                error: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z"/></svg>',
+                info: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>'
+            };
+            window.showToast = function(message, type, duration) {
+                type = type || 'success'; duration = duration || 3000;
+                var container = document.getElementById('toast-container');
+                if (!container) return;
+                var toast = document.createElement('div');
+                toast.className = 'toast-notification toast-' + type;
+                toast.innerHTML = (ICONS[type] || ICONS.info) + ' <span>' + message + '</span>';
+                container.appendChild(toast);
+                function remove() {
+                    if (toast.classList.contains('toast-hiding')) return;
+                    toast.classList.add('toast-hiding');
+                    setTimeout(function() { toast.remove(); }, 300);
+                }
+                toast.addEventListener('click', remove);
+                setTimeout(remove, duration);
+            };
+        })();
+    </script>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <script>
+    (function() {
+        var msgs = {{ messages | tojson }};
+        msgs.forEach(function(m) {
+            var type = m[0] === 'error' ? 'error' : (m[0] === 'info' ? 'info' : 'success');
+            showToast(m[1], type);
+        });
+    })();
+    </script>
+    {% endif %}
+    {% endwith %}
+
+    <script>
+        // ========== SPA Router ==========
+        (function() {
+            var mainEl = document.getElementById('main-content');
+            var bar = document.getElementById('spa-progress');
+            if (!mainEl || !bar) return;
+
+            var prefetchCache = {};
+            var isNavigating = false;
+            var loadedScripts = {};
+
+            document.querySelectorAll('script[src]').forEach(function(s) {
+                loadedScripts[s.src] = true;
+                var attr = s.getAttribute('src');
+                if (attr) loadedScripts[attr] = true;
+            });
+
+            function showProgress() {
+                bar.style.transition = 'none'; bar.style.width = '0'; bar.style.opacity = '1';
+                void bar.offsetWidth;
+                bar.style.transition = 'width 0.6s cubic-bezier(0.4,0,0.2,1)'; bar.style.width = '70%';
+            }
+            function finishProgress() {
+                bar.style.transition = 'width 0.15s ease'; bar.style.width = '100%';
+                setTimeout(function() { bar.style.transition = 'opacity 0.3s'; bar.style.opacity = '0'; }, 150);
+            }
+
+            function shouldIntercept(href) {
+                if (!href) return false;
+                if (href.startsWith('#')) return false;
+                if (!href.startsWith('/') && !href.startsWith('?')) return false;
+                if (href.indexOf('/logout') !== -1) return false;
+                if (href.indexOf('/download') !== -1) return false;
+                if (href.indexOf('/uploads/') !== -1) return false;
+                if (href.indexOf('.pdf') !== -1) return false;
+                return true;
+            }
+
+            function resolveHref(href) {
+                var a = document.createElement('a'); a.href = href;
+                return a.pathname + a.search;
+            }
+            function isSamePage(href) {
+                return resolveHref(href) === (location.pathname + location.search);
+            }
+
+            function fetchPage(url, skipRedirect) {
+                return fetch(url, { credentials: 'same-origin' }).then(function(r) {
+                    if (r.redirected && !skipRedirect) { window.location.href = r.url; return null; }
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.text();
+                });
+            }
+
+            function prefetch(url) {
+                url = resolveHref(url);
+                if (prefetchCache[url]) return;
+                prefetchCache[url] = fetchPage(url, true).catch(function() { delete prefetchCache[url]; });
+            }
+
+            function executeScripts(container) {
+                var scripts = Array.from(container.querySelectorAll('script'));
+                var externalQueue = [], inlineQueue = [];
+                scripts.forEach(function(s) {
+                    if (s.src || s.getAttribute('src')) externalQueue.push(s);
+                    else inlineQueue.push(s);
+                });
+                var loadPromises = externalQueue.map(function(old) {
+                    var src = old.src || old.getAttribute('src');
+                    if (loadedScripts[src] || loadedScripts[old.getAttribute('src')]) { old.remove(); return Promise.resolve(); }
+                    return new Promise(function(resolve) {
+                        var ns = document.createElement('script');
+                        ns.src = old.getAttribute('src');
+                        ns.onload = function() { loadedScripts[ns.src] = true; resolve(); };
+                        ns.onerror = resolve;
+                        old.parentNode.replaceChild(ns, old);
+                    });
+                });
+                return Promise.all(loadPromises).then(function() {
+                    var dclCallbacks = [];
+                    var origAEL = document.addEventListener;
+                    document.addEventListener = function(type, fn, opts) {
+                        if (type === 'DOMContentLoaded') dclCallbacks.push(fn);
+                        else origAEL.call(document, type, fn, opts);
+                    };
+                    inlineQueue.forEach(function(old) {
+                        var ns = document.createElement('script');
+                        ns.textContent = old.textContent;
+                        old.parentNode.replaceChild(ns, old);
+                    });
+                    document.addEventListener = origAEL;
+                    dclCallbacks.forEach(function(fn) { try { fn(); } catch(e) { console.error('SPA script error:', e); } });
+                });
+            }
+
+            function navigateTo(url, isPush) {
+                if (isNavigating) return;
+                isNavigating = true;
+                var fullUrl = resolveHref(url);
+                showProgress();
+
+                mainEl.style.transition = 'opacity 80ms ease-out';
+                mainEl.style.opacity = '0';
+
+                var promise = prefetchCache[fullUrl] || fetchPage(fullUrl);
+                delete prefetchCache[fullUrl];
+                var fadeDone = new Promise(function(r) { setTimeout(r, 80); });
+
+                Promise.all([promise, fadeDone]).then(function(results) {
+                    var html = results[0];
+                    if (!html) { isNavigating = false; return; }
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(html, 'text/html');
+                    var newMain = doc.getElementById('main-content') || doc.querySelector('main');
+                    var newTitle = doc.querySelector('title');
+                    if (!newMain) { window.location.href = fullUrl; return; }
+                    if (newTitle) document.title = newTitle.textContent;
+                    if (isPush !== false) history.pushState({ spa: true }, '', fullUrl);
+                    var newBody = doc.querySelector('body');
+                    if (newBody) document.body.className = newBody.className;
+                    mainEl.innerHTML = newMain.innerHTML;
+                    window.scrollTo(0, 0);
+                    return executeScripts(mainEl);
+                }).then(function() {
+                    mainEl.style.transition = 'none';
+                    mainEl.style.opacity = '1';
+                    if (window.__runPageEntrance) window.__runPageEntrance();
+                    finishProgress();
+                    isNavigating = false;
+                }).catch(function(err) {
+                    console.error('SPA navigation error:', err);
+                    window.location.href = fullUrl;
+                });
+            }
+
+            document.addEventListener('click', function(e) {
+                if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+                var link = e.target.closest('a[href]');
+                if (!link) return;
+                if (link.target === '_blank') return;
+                var href = link.getAttribute('href');
+                if (!shouldIntercept(href)) return;
+                if (isSamePage(href)) return;
+                e.preventDefault();
+                navigateTo(href, true);
+            });
+
+            var prefetchTimer = null;
+            document.addEventListener('mouseover', function(e) {
+                var link = e.target.closest('a[href]');
+                if (!link) return;
+                var href = link.getAttribute('href');
+                if (!shouldIntercept(href) || isSamePage(href)) return;
+                clearTimeout(prefetchTimer);
+                prefetchTimer = setTimeout(function() { prefetch(href); }, 65);
+            });
+
+            document.addEventListener('touchstart', function(e) {
+                var link = e.target.closest('a[href]');
+                if (!link) return;
+                var href = link.getAttribute('href');
+                if (!shouldIntercept(href) || isSamePage(href)) return;
+                prefetch(href);
+            }, { passive: true });
+
+            window.addEventListener('popstate', function(e) {
+                if (e.state && e.state.spa) navigateTo(location.href, false);
+                else location.reload();
+            });
+            history.replaceState({ spa: true }, '', location.href);
+        })();
+
+        // bfcache fix
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                var pw = document.querySelector('.page-wrap');
+                pw.getAnimations().forEach(function(a) { a.cancel(); });
+                pw.style.opacity = '1'; pw.style.transform = 'none';
+                document.getElementById('main-content').style.opacity = '1';
+            }
+        });
+
+        // ========== Animation System ==========
+        (function() {
+            var STAGGER_MS = 40;
+            var MAX_DELAY = 400;
+
+            function animateEntrance(container) {
+                animateGroup(container.querySelectorAll('.breadcrumbs'), 0, 250);
+                animateGroup(container.querySelectorAll('.page-header, .hero-section'), 0, 320);
+                animateGroup(container.querySelectorAll('.stats-bar, .search-section'), 70, 320);
+
+                var cards = container.querySelectorAll('.card, .journal-card, .issue-card, .article-card');
+                cards.forEach(function(el, i) {
+                    var anim = el.animate([
+                        { opacity: 0, transform: 'translateY(18px) scale(0.98)' },
+                        { opacity: 1, transform: 'translateY(0) scale(1)' }
+                    ], {
+                        duration: 420,
+                        delay: 100 + Math.min(i * STAGGER_MS, MAX_DELAY),
+                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                        fill: 'backwards'
+                    });
+                    anim.finished.then(function() { anim.cancel(); });
+                });
+            }
+
+            function animateGroup(elements, baseDelay, duration) {
+                if (!elements.length) return;
+                Array.from(elements).forEach(function(el, i) {
+                    var anim = el.animate([
+                        { opacity: 0, transform: 'translateY(14px)' },
+                        { opacity: 1, transform: 'translateY(0)' }
+                    ], {
+                        duration: duration,
+                        delay: baseDelay + i * 60,
+                        easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                        fill: 'backwards'
+                    });
+                    anim.finished.then(function() { anim.cancel(); });
+                });
+            }
+
+            function animateCounters(container) {
+                var counters = container.querySelectorAll('.stat-value');
+                counters.forEach(function(el) {
+                    var text = el.textContent.trim();
+                    var target = parseInt(text);
+                    if (isNaN(target) || target <= 0) return;
+                    if (el.dataset.slotBusy) return;
+                    el.dataset.slotBusy = '1';
+
+                    var cs = getComputedStyle(el);
+                    var fontSize = parseFloat(cs.fontSize);
+                    var cellH = Math.round(parseFloat(cs.lineHeight) || (fontSize * 1.2));
+                    var digitW = Math.round(fontSize * 0.65);
+                    var digits = String(target).split('');
+
+                    el.textContent = '';
+
+                    var wrapper = document.createElement('span');
+                    wrapper.style.cssText = 'display:inline-flex;height:' + cellH + 'px;overflow:hidden;line-height:' + cellH + 'px;vertical-align:baseline;';
+
+                    digits.forEach(function(d, idx) {
+                        var digit = parseInt(d);
+                        var spins = 2;
+                        var totalSteps = spins * 10 + digit;
+                        var reel = document.createElement('span');
+                        reel.style.cssText = 'display:flex;flex-direction:column;';
+                        for (var i = 0; i <= totalSteps; i++) {
+                            var cell = document.createElement('span');
+                            cell.style.cssText = 'display:flex;align-items:center;justify-content:center;height:' + cellH + 'px;width:' + digitW + 'px;flex-shrink:0;';
+                            cell.textContent = String(i % 10);
+                            reel.appendChild(cell);
+                        }
+                        wrapper.appendChild(reel);
+                        var delay = 50 + idx * 130;
+                        var dur = 700 + idx * 200;
+                        reel.animate([
+                            { transform: 'translateY(0)' },
+                            { transform: 'translateY(' + (-totalSteps * cellH) + 'px)' }
+                        ], { duration: dur, delay: delay, easing: 'cubic-bezier(0.06, 0.75, 0.18, 1)', fill: 'forwards' });
+                    });
+                    el.appendChild(wrapper);
+                    /* No cleanup — fill:forwards holds the final position permanently */
+                });
+            }
+
+            // Ripple
+            document.addEventListener('mousedown', function(e) {
+                var btn = e.target.closest('.btn-primary, .btn-accent, button[type="submit"]');
+                if (!btn) return;
+                var rect = btn.getBoundingClientRect();
+                var br = getComputedStyle(btn).borderRadius || '0';
+                var overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed;pointer-events:none;overflow:hidden;z-index:9999;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;height:' + rect.height + 'px;border-radius:' + br + ';';
+                var size = Math.max(rect.width, rect.height) * 2;
+                var x = e.clientX - rect.left - size / 2;
+                var y = e.clientY - rect.top - size / 2;
+                var ripple = document.createElement('span');
+                ripple.className = 'ripple-circle';
+                ripple.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + x + 'px;top:' + y + 'px;';
+                overlay.appendChild(ripple);
+                document.body.appendChild(overlay);
+                setTimeout(function() { overlay.remove(); }, 600);
+            });
+
+            window.__runPageEntrance = function(customContainer) {
+                var target = customContainer || document.getElementById('main-content');
+                if (!target) return;
+                animateEntrance(target);
+                animateCounters(target);
+            };
+            setTimeout(function() {
+                var main = document.getElementById('main-content');
+                if (main) animateCounters(main);
+            }, 380);
+        })();
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

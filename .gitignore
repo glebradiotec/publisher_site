@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+instance/
+backups/
+static/uploads/covers/*
+static/uploads/pdfs/*
+!static/uploads/covers/.gitkeep
+!static/uploads/pdfs/.gitkeep
+.env
+*.db
+Old/
+venv/
+.venv/

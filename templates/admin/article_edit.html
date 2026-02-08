@@ -1,0 +1,150 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Редактировать' if article else 'Добавить' }} статью — CMS{% endblock %}
+
+{% block admin_content %}
+<ul class="breadcrumbs">
+    <li><a href="/admin/journals">Журналы</a></li>
+    <li><a href="/admin/journal/{{ journal.id }}/issues">{{ journal.name }}</a></li>
+    <li><a href="/admin/issues/{{ issue.id }}/articles">№{{ issue.number }}/{{ issue.year }}</a></li>
+    <li><span class="breadcrumb-current">{{ 'Редактировать' if article else 'Новая' }} статья</span></li>
+</ul>
+
+<div class="page-header">
+    <h1>{{ 'Редактировать статью' if article else 'Новая статья' }}</h1>
+</div>
+
+<form method="post" enctype="multipart/form-data" style="max-width: 800px;">
+    <!-- Название -->
+    <div style="margin-bottom: 16px;">
+        <label class="form-label">Название статьи (RU) *</label>
+        <input type="text" name="title" class="form-control" value="{{ article.title if article else '' }}" required>
+    </div>
+    <div style="margin-bottom: 16px;">
+        <label class="form-label">Title (EN)</label>
+        <input type="text" name="title_en" class="form-control" value="{{ article.title_en if article else '' }}">
+    </div>
+
+    <!-- Авторы -->
+    <div style="margin-bottom: 16px;">
+        <label class="form-label">Авторы</label>
+        <div id="authors-container">
+            {% if article and article.authors %}
+                {% for author in article.authors %}
+                <div class="author-row" style="border: 1px solid var(--color-border-default); border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                        <input type="text" name="author_name[]" class="form-control" placeholder="ФИО (RU)" value="{{ author.full_name }}">
+                        <input type="text" name="author_name_en[]" class="form-control" placeholder="Name (EN)" value="{{ author.full_name_en or '' }}">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                        <input type="text" name="author_affiliation[]" class="form-control" placeholder="Организация (RU)" value="{{ author.affiliation or '' }}">
+                        <input type="text" name="author_affiliation_en[]" class="form-control" placeholder="Affiliation (EN)" value="{{ author.affiliation_en or '' }}">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <input type="email" name="author_email[]" class="form-control" placeholder="Email" value="{{ author.email or '' }}">
+                        <input type="text" name="author_orcid[]" class="form-control" placeholder="ORCID" value="{{ author.orcid or '' }}">
+                    </div>
+                    <button type="button" onclick="this.closest('.author-row').remove()" class="btn btn-sm btn-danger" style="margin-top: 8px;">Удалить</button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addAuthor()" class="btn btn-sm btn-secondary" style="margin-top: 4px;">+ Добавить автора</button>
+    </div>
+
+    <!-- Аннотация -->
+    <div style="margin-bottom: 16px;">
+        <label class="form-label">Аннотация (RU)</label>
+        <textarea name="abstract" class="form-control" rows="4">{{ article.abstract if article else '' }}</textarea>
+    </div>
+    <div style="margin-bottom: 16px;">
+        <label class="form-label">Abstract (EN)</label>
+        <textarea name="abstract_en" class="form-control" rows="4">{{ article.abstract_en if article else '' }}</textarea>
+    </div>
+
+    <!-- Ключевые слова -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div>
+            <label class="form-label">Ключевые слова (RU)</label>
+            <input type="text" name="keywords" class="form-control" value="{{ article.keywords if article else '' }}" 
+                   placeholder="через запятую">
+        </div>
+        <div>
+            <label class="form-label">Keywords (EN)</label>
+            <input type="text" name="keywords_en" class="form-control" value="{{ article.keywords_en if article else '' }}" 
+                   placeholder="comma separated">
+        </div>
+    </div>
+
+    <!-- Библиография -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div>
+            <label class="form-label">DOI</label>
+            <input type="text" name="doi" class="form-control" value="{{ article.doi if article else '' }}" 
+                   placeholder="10.xxxx/xxxxx">
+        </div>
+        <div>
+            <label class="form-label">Страницы с</label>
+            <input type="number" name="pages_from" class="form-control" value="{{ article.pages_from if article else '' }}">
+        </div>
+        <div>
+            <label class="form-label">Страницы по</label>
+            <input type="number" name="pages_to" class="form-control" value="{{ article.pages_to if article else '' }}">
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div>
+            <label class="form-label">Язык</label>
+            <select name="language" class="form-control">
+                <option value="ru" {{ 'selected' if not article or article.language == 'ru' }}>Русский</option>
+                <option value="en" {{ 'selected' if article and article.language == 'en' }}>English</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label">PDF файл</label>
+            {% if article and article.pdf_file %}
+            <div style="margin-bottom: 4px; font-size: 13px;">
+                Загружен: {{ article.pdf_file }}
+                <label><input type="checkbox" name="delete_pdf"> Удалить</label>
+            </div>
+            {% endif %}
+            <input type="file" name="pdf_file" class="form-control" accept=".pdf">
+        </div>
+    </div>
+
+    <div style="margin-bottom: 24px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" name="is_published" {{ 'checked' if not article or article.is_published }}>
+            <span class="form-label" style="margin: 0;">Опубликовать</span>
+        </label>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+        <button type="submit" class="btn btn-primary">{{ 'Сохранить' if article else 'Добавить' }}</button>
+        <a href="/admin/issues/{{ issue.id }}/articles" class="btn btn-secondary">Отмена</a>
+    </div>
+</form>
+
+<script>
+function addAuthor() {
+    var container = document.getElementById('authors-container');
+    var row = document.createElement('div');
+    row.className = 'author-row';
+    row.style.cssText = 'border: 1px solid var(--color-border-default); border-radius: 8px; padding: 12px; margin-bottom: 8px;';
+    row.innerHTML = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">'
+        + '<input type="text" name="author_name[]" class="form-control" placeholder="ФИО (RU)">'
+        + '<input type="text" name="author_name_en[]" class="form-control" placeholder="Name (EN)">'
+        + '</div>'
+        + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">'
+        + '<input type="text" name="author_affiliation[]" class="form-control" placeholder="Организация (RU)">'
+        + '<input type="text" name="author_affiliation_en[]" class="form-control" placeholder="Affiliation (EN)">'
+        + '</div>'
+        + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">'
+        + '<input type="email" name="author_email[]" class="form-control" placeholder="Email">'
+        + '<input type="text" name="author_orcid[]" class="form-control" placeholder="ORCID">'
+        + '</div>'
+        + '<button type="button" onclick="this.closest(\'.author-row\').remove()" class="btn btn-sm btn-danger" style="margin-top: 8px;">Удалить</button>';
+    container.appendChild(row);
+}
+</script>
+{% endblock %}

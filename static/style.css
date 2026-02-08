@@ -1,0 +1,389 @@
+/* =============================================
+   CSS Variables (Light / Dark themes)
+   ============================================= */
+:root {
+    --color-canvas-default: #ffffff;
+    --color-canvas-subtle: #f6f8fa;
+    --color-canvas-inset: #eff2f5;
+    --color-border-default: #d0d7de;
+    --color-border-muted: #d8dee4;
+    --color-fg-default: #1f2328;
+    --color-fg-muted: #656d76;
+    --color-fg-subtle: #6e7781;
+    --color-accent-fg: #0D9488;
+    --color-accent-emphasis: #0D9488;
+    --color-success-fg: #1a7f37;
+    --color-danger-fg: #cf222e;
+    --shadow-small: 0 1px 0 rgba(31,35,40,0.04);
+    --shadow-medium: 0 3px 6px rgba(140,149,159,0.15);
+}
+
+[data-theme="dark"] {
+    --color-canvas-default: #0d1117;
+    --color-canvas-subtle: #161b22;
+    --color-canvas-inset: #010409;
+    --color-border-default: #30363d;
+    --color-border-muted: #21262d;
+    --color-fg-default: #e6edf3;
+    --color-fg-muted: #8b949e;
+    --color-fg-subtle: #6e7681;
+    --color-accent-fg: #5EEAD4;
+    --color-accent-emphasis: #0D9488;
+    --color-success-fg: #3fb950;
+    --color-danger-fg: #f85149;
+    --shadow-small: 0 0 transparent;
+    --shadow-medium: 0 3px 6px #010409;
+}
+
+/* =============================================
+   Base
+   ============================================= */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: "Plus Jakarta Sans", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-size: 16px; line-height: 1.5;
+    color: var(--color-fg-default);
+    background-color: var(--color-canvas-default);
+    margin: 0; padding: 0; min-height: 100vh;
+}
+
+main { width: 100%; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+a { color: var(--color-accent-fg); }
+a:hover { text-decoration: underline; }
+
+/* =============================================
+   Hero Section
+   ============================================= */
+.hero-dot-pattern {
+    background-image: radial-gradient(#0D9488 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+/* =============================================
+   Carousel
+   ============================================= */
+.carousel-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* =============================================
+   Header (legacy compat for non-homepage pages)
+   ============================================= */
+.site-header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--color-canvas-default);
+    border-bottom: 1px solid var(--color-border-default);
+    padding: 12px 0;
+}
+
+.site-nav {
+    display: flex; align-items: center; gap: 24px;
+}
+
+.site-logo {
+    font-size: 18px; font-weight: 700;
+    color: var(--color-fg-default);
+    text-decoration: none;
+}
+
+.site-nav-links {
+    display: flex; gap: 16px;
+}
+
+.site-nav-links a {
+    color: var(--color-fg-muted);
+    text-decoration: none; font-size: 14px; font-weight: 500;
+}
+.site-nav-links a:hover { color: var(--color-fg-default); }
+
+.site-nav-right {
+    margin-left: auto; display: flex; align-items: center; gap: 8px;
+}
+
+/* =============================================
+   Footer — minimal (legacy)
+   ============================================= */
+.site-footer {
+    text-align: center; padding: 32px 0; margin-top: 48px;
+    border-top: 1px solid var(--color-border-default);
+    color: var(--color-fg-muted); font-size: 14px;
+}
+
+/* =============================================
+   Page Layouts
+   ============================================= */
+.page-section {
+    padding: 32px 0;
+}
+
+.page-header {
+    margin-bottom: 32px;
+}
+.page-header h1 {
+    font-size: 28px; font-weight: 700; margin: 0 0 8px 0;
+}
+.page-header p {
+    color: var(--color-fg-muted); margin: 0; font-size: 16px;
+}
+
+/* =============================================
+   Cards — generic
+   ============================================= */
+.card {
+    background: var(--color-canvas-default);
+    border: 1px solid var(--color-border-default);
+    border-radius: 8px; padding: 20px;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.card:hover {
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-2px);
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* =============================================
+   Journal card (legacy for non-homepage)
+   ============================================= */
+.journal-card:hover { text-decoration: none; }
+.journal-card .journal-name { font-size: 18px; font-weight: 600; margin: 0 0 4px 0; }
+.journal-card .journal-issn { font-size: 13px; color: var(--color-fg-muted); }
+.journal-card .journal-description {
+    font-size: 14px; color: var(--color-fg-muted);
+    margin-top: 8px; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* =============================================
+   Article card
+   ============================================= */
+.article-card .article-title {
+    font-size: 16px; font-weight: 600; margin: 0 0 6px 0; line-height: 1.4;
+}
+.article-card .article-title a {
+    color: var(--color-fg-default); text-decoration: none;
+}
+.article-card .article-title a:hover { color: var(--color-accent-fg); }
+.article-card .article-authors {
+    font-size: 14px; color: var(--color-fg-muted); margin-bottom: 8px;
+}
+.article-card .article-meta {
+    display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--color-fg-subtle);
+}
+
+.articles-list {
+    display: flex; flex-direction: column; gap: 16px;
+}
+
+/* =============================================
+   Issue card (legacy)
+   ============================================= */
+.issue-card .issue-title { font-size: 16px; font-weight: 600; margin: 0 0 4px 0; }
+.issue-card .issue-meta { font-size: 13px; color: var(--color-fg-muted); }
+
+/* =============================================
+   Article detail page
+   ============================================= */
+.article-detail .article-full-title {
+    font-size: 24px; font-weight: 700; margin: 0 0 16px 0; line-height: 1.3;
+}
+.article-detail .article-full-authors {
+    font-size: 16px; color: var(--color-fg-muted); margin-bottom: 16px; line-height: 1.6;
+}
+.article-detail .article-abstract {
+    padding: 20px; background: var(--color-canvas-subtle);
+    border: 1px solid var(--color-border-default); border-radius: 8px;
+    margin-bottom: 20px;
+}
+.article-detail .article-abstract h3 { margin: 0 0 8px 0; font-size: 16px; }
+.article-detail .article-keywords {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.keyword-tag {
+    display: inline-block; padding: 4px 12px; font-size: 13px;
+    background: var(--color-canvas-subtle); border: 1px solid var(--color-border-default);
+    border-radius: 20px; color: var(--color-fg-muted);
+}
+.article-detail .article-bib {
+    font-size: 14px; color: var(--color-fg-muted); line-height: 1.8;
+}
+
+/* =============================================
+   Search
+   ============================================= */
+.search-input-wrapper {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--color-canvas-subtle);
+    border: 2px solid var(--color-border-default);
+    border-radius: 12px; padding: 12px 18px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-input-wrapper:focus-within {
+    border-color: var(--color-accent-emphasis);
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+    background: var(--color-canvas-default);
+}
+.search-input {
+    flex: 1; border: none; background: transparent;
+    color: var(--color-fg-default); font-size: 16px; outline: none;
+}
+.search-input::placeholder { color: var(--color-fg-muted); }
+
+/* =============================================
+   Labels / Badges
+   ============================================= */
+.badge-published {
+    display: inline-block; padding: 2px 8px; font-size: 12px; font-weight: 600;
+    border-radius: 20px; background: rgba(31, 136, 61, 0.1);
+    color: var(--color-success-fg);
+}
+.badge-draft {
+    display: inline-block; padding: 2px 8px; font-size: 12px; font-weight: 600;
+    border-radius: 20px; background: var(--color-canvas-subtle);
+    color: var(--color-fg-muted);
+}
+
+/* =============================================
+   Forms
+   ============================================= */
+.form-control, .form-select {
+    background-color: var(--color-canvas-default); color: var(--color-fg-default);
+    border: 1px solid var(--color-border-default); border-radius: 6px;
+    padding: 8px 12px; font-size: 14px; width: 100%;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-accent-emphasis);
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+    outline: none;
+}
+.form-label { font-weight: 600; font-size: 14px; margin-bottom: 6px; display: block; }
+textarea.form-control { min-height: 100px; resize: vertical; }
+
+.btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 20px; font-size: 14px; font-weight: 500;
+    border-radius: 6px; border: 1px solid transparent;
+    cursor: pointer; text-decoration: none; transition: all 0.15s;
+}
+.btn-primary {
+    background: var(--color-accent-emphasis); color: #fff;
+    border-color: rgba(31,35,40,0.15);
+}
+.btn-primary:hover { background: #115E59; color: #fff; text-decoration: none; }
+.btn-secondary {
+    background: var(--color-canvas-subtle); color: var(--color-fg-default);
+    border-color: var(--color-border-default);
+}
+.btn-secondary:hover { background: var(--color-canvas-inset); text-decoration: none; }
+.btn-danger { background: var(--color-danger-fg); color: #fff; }
+.btn-sm { padding: 4px 12px; font-size: 13px; }
+
+/* =============================================
+   Admin Layout
+   ============================================= */
+.admin-layout { display: flex; min-height: 100vh; }
+.admin-sidebar {
+    width: 240px; background: var(--color-canvas-subtle);
+    border-right: 1px solid var(--color-border-default);
+    padding: 20px 0; flex-shrink: 0;
+}
+.admin-sidebar-title {
+    padding: 0 20px; font-size: 16px; font-weight: 700;
+    margin-bottom: 20px; color: var(--color-fg-default);
+}
+.admin-sidebar a {
+    display: block; padding: 8px 20px; font-size: 14px;
+    color: var(--color-fg-muted); text-decoration: none;
+}
+.admin-sidebar a:hover { background: var(--color-canvas-inset); color: var(--color-fg-default); }
+.admin-sidebar a.active { color: var(--color-accent-fg); font-weight: 600; background: rgba(13,148,136,0.1); }
+.admin-main { flex: 1; padding: 32px; overflow-x: auto; }
+
+/* =============================================
+   Stats grid (admin — legacy pages that still use it)
+   ============================================= */
+.stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+    margin-bottom: 32px;
+}
+.stat-card {
+    background: var(--color-canvas-default); border: 1px solid var(--color-border-default);
+    border-radius: 8px; padding: 20px; text-align: center;
+}
+.stat-value { font-size: 32px; font-weight: 700; color: var(--color-accent-fg); }
+.stat-label { font-size: 14px; color: var(--color-fg-muted); margin-top: 4px; }
+
+/* =============================================
+   Table
+   ============================================= */
+.data-table {
+    width: 100%; border-collapse: collapse; font-size: 14px;
+}
+.data-table th, .data-table td {
+    padding: 10px 12px; text-align: left;
+    border-bottom: 1px solid var(--color-border-default);
+}
+.data-table th {
+    font-weight: 600; background: var(--color-canvas-subtle);
+    color: var(--color-fg-muted); font-size: 13px;
+}
+.data-table tr:hover { background: var(--color-canvas-subtle); }
+
+/* =============================================
+   Empty state
+   ============================================= */
+.empty-state {
+    text-align: center; padding: 64px 24px; color: var(--color-fg-muted);
+}
+.empty-state h3 { font-size: 20px; font-weight: 600; color: var(--color-fg-default); margin: 0 0 8px 0; }
+.empty-state p { margin: 0 0 16px 0; }
+
+/* =============================================
+   Ripple
+   ============================================= */
+.ripple-circle {
+    position: absolute; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(0);
+    animation: rippleExpand 0.55s ease-out forwards;
+    pointer-events: none; z-index: 1;
+}
+@keyframes rippleExpand {
+    to { transform: scale(2.5); opacity: 0; }
+}
+
+/* =============================================
+   Responsive
+   ============================================= */
+@media (max-width: 768px) {
+    .container { padding: 0 16px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .page-header h1 { font-size: 22px; }
+    .admin-sidebar { display: none; }
+    .admin-main { padding: 16px; }
+}
+
+/* =============================================
+   Scrollbar (dark)
+   ============================================= */
+[data-theme="dark"] ::-webkit-scrollbar { width: 12px; height: 12px; }
+[data-theme="dark"] ::-webkit-scrollbar-track { background: var(--color-canvas-default); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: var(--color-border-default); border-radius: 6px;
+    border: 3px solid var(--color-canvas-default);
+}
+
+/* =============================================
+   Dark mode overrides for body bg
+   ============================================= */
+[data-theme="dark"] body {
+    background-color: #0F172A;
+    color: #e6edf3;
+}

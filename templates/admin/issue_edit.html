@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Редактировать' if issue else 'Добавить' }} выпуск — CMS{% endblock %}
+
+{% block admin_content %}
+<ul class="breadcrumbs">
+    <li><a href="/admin/journals">Журналы</a></li>
+    <li><a href="/admin/journal/{{ journal.id }}/issues">{{ journal.name }}</a></li>
+    <li><span class="breadcrumb-current">{{ 'Редактировать' if issue else 'Новый' }} выпуск</span></li>
+</ul>
+
+<div class="page-header">
+    <h1>{{ 'Редактировать выпуск' if issue else 'Новый выпуск' }}</h1>
+</div>
+
+<form method="post" enctype="multipart/form-data" style="max-width: 600px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div>
+            <label class="form-label">Номер *</label>
+            <input type="number" name="number" class="form-control" value="{{ issue.number if issue else 1 }}" required>
+        </div>
+        <div>
+            <label class="form-label">Том</label>
+            <input type="number" name="volume" class="form-control" value="{{ issue.volume if issue and issue.volume else '' }}">
+        </div>
+        <div>
+            <label class="form-label">Год *</label>
+            <input type="number" name="year" class="form-control" value="{{ issue.year if issue else 2026 }}" required>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 16px;">
+        <label class="form-label">Дата публикации</label>
+        <input type="text" name="publication_date" class="form-control" 
+               value="{{ issue.publication_date if issue else '' }}" placeholder="например: Март 2026">
+    </div>
+
+    <div style="margin-bottom: 16px;">
+        <label class="form-label">Описание / От редакции</label>
+        <textarea name="description" class="form-control" rows="3">{{ issue.description if issue else '' }}</textarea>
+    </div>
+
+    <div style="margin-bottom: 16px;">
+        <label class="form-label">Обложка выпуска</label>
+        {% if issue and issue.cover_image %}
+        <div style="margin-bottom: 8px;">
+            <img src="{{ url_for('static', filename='uploads/covers/' + issue.cover_image) }}" 
+                 style="max-width: 120px; border-radius: 4px;">
+            <label style="display: block; margin-top: 4px; font-weight: normal; font-size: 13px;">
+                <input type="checkbox" name="delete_cover"> Удалить обложку
+            </label>
+        </div>
+        {% endif %}
+        <input type="file" name="cover_image" class="form-control" accept="image/*">
+    </div>
+
+    <div style="margin-bottom: 24px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" name="is_published" {{ 'checked' if issue and issue.is_published }}>
+            <span class="form-label" style="margin: 0;">Опубликовать на сайте</span>
+        </label>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+        <button type="submit" class="btn btn-primary">{{ 'Сохранить' if issue else 'Создать' }}</button>
+        <a href="/admin/journal/{{ journal.id }}/issues" class="btn btn-secondary">Отмена</a>
+    </div>
+</form>
+{% endblock %}

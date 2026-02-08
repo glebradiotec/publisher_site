@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Electrodynamic analysis of microstrip antenna arrays - SciPub</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0D9488", // Teal 600
+                        "primary-soft": "#5EEAD4", // Teal 300
+                        "primary-dark": "#115E59", // Teal 800
+                        "accent": "#0EA5E9", // Sky 500
+                        "accent-dark": "#0369A1", // Sky 700
+                        "secondary": "#06B6D4", // Cyan 500
+                        "background-light": "#F0FDFA", // Azure/Mint off-white
+                        "background-dark": "#0F172A", // Slate 900
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1E293B", // Slate 800
+                        "text-main": "#0F172A", // Slate 900
+                        "text-muted": "#475569", // Slate 600
+                        "soft-teal": "#CCFBF1", // Teal 100
+                        "soft-cyan": "#CFFAFE", // Cyan 100
+                        "soft-blue": "#E0F2FE", // Sky 100
+                        "ocean-blue": "#1E3A8A", // Blue 900
+                    },
+                    fontFamily: {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "serif": ["Playfair Display", "serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "3xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(13, 148, 136, 0.1)',
+                        'glow': '0 0 20px rgba(13, 148, 136, 0.3)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #99f6e4; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5eead4; 
+        }
+        .blob-shape {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-body text-text-main antialiased selection:bg-primary-soft selection:text-white overflow-x-hidden">
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="blob-shape bg-soft-teal w-[500px] h-[500px] rounded-full -top-20 -left-20 animate-pulse" style="animation-duration: 10s;"></div>
+<div class="blob-shape bg-soft-cyan w-[400px] h-[400px] rounded-full top-40 right-0 opacity-40"></div>
+<div class="blob-shape bg-soft-blue w-[600px] h-[600px] rounded-full -bottom-40 left-1/3 opacity-30"></div>
+</div>
+<header class="sticky top-4 z-50 w-full px-4 sm:px-6 lg:px-8">
+<div class="max-w-[1200px] mx-auto bg-white/70 dark:bg-surface-dark/70 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-2xl shadow-sm">
+<div class="flex h-16 items-center justify-between px-4 sm:px-6">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[24px]">science</span>
+</div>
+<span class="text-xl font-display font-bold tracking-tight text-text-main dark:text-white">SciPub</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-semibold text-primary hover:text-primary-dark transition-colors dark:text-white" href="#">Journals</a>
+<a class="text-sm font-semibold text-text-main/70 hover:text-primary transition-colors dark:text-gray-300" href="#">Books</a>
+<a class="text-sm font-semibold text-text-main/70 hover:text-primary transition-colors dark:text-gray-300" href="#">Submit Work</a>
+<a class="text-sm font-semibold text-text-main/70 hover:text-primary transition-colors dark:text-gray-300" href="#">Our Story</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="hidden sm:flex text-sm font-bold text-text-main dark:text-white hover:text-primary px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
+                        Log In
+                    </button>
+<button class="flex items-center justify-center rounded-xl bg-primary text-white px-5 py-2.5 text-sm font-bold hover:bg-ocean-blue hover:shadow-lg hover:shadow-primary/25 transition-all transform hover:-translate-y-0.5">
+                        Get Started
+                    </button>
+</div>
+</div>
+</div>
+</header>
+<main class="relative z-10 pt-8 pb-24">
+<section class="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+<div class="flex items-center gap-2 mb-6 flex-wrap">
+<a class="text-sm text-text-muted hover:text-primary transition-colors" href="#">Home</a>
+<span class="text-text-muted/50">/</span>
+<a class="text-sm text-text-muted hover:text-primary transition-colors" href="#">Journals</a>
+<span class="text-text-muted/50">/</span>
+<a class="text-sm text-text-muted hover:text-primary transition-colors" href="#">Antennas</a>
+<span class="text-text-muted/50">/</span>
+<a class="text-sm text-text-muted hover:text-primary transition-colors" href="#">Issue No. 5</a>
+<span class="text-text-muted/50">/</span>
+<span class="text-sm font-semibold text-primary truncate max-w-[200px] sm:max-w-xs">Electrodynamic analysis...</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+<div class="lg:col-span-8">
+<div class="mb-8">
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800">
+                                    Open Access
+                                </span>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-800 border border-sky-200 dark:bg-sky-900/30 dark:text-sky-400 dark:border-sky-800">
+                                    Peer Reviewed
+                                </span>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800">
+                                    Research Article
+                                </span>
+</div>
+<h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-text-main dark:text-white mb-6 leading-[1.15]">
+                                Electrodynamic analysis of microstrip antenna arrays for high-precision positioning
+                            </h1>
+<div class="space-y-4">
+<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-lg">
+<div class="group relative flex items-center gap-2 cursor-pointer">
+<span class="font-bold text-primary dark:text-primary-soft hover:underline decoration-2 underline-offset-4">A. V. Bogoslovsky</span>
+<span class="flex items-center justify-center w-5 h-5 bg-[#A6CE39] rounded-full text-white text-[10px] font-bold" title="ORCID ID">iD</span>
+<div class="absolute bottom-full left-0 mb-2 hidden group-hover:block w-64 bg-slate-800 text-white text-xs p-3 rounded-lg shadow-xl z-20">
+                                            Department of Radiophysics, Voronezh State University, Russia
+                                        </div>
+</div>
+<div class="group relative flex items-center gap-2 cursor-pointer">
+<span class="font-bold text-primary dark:text-primary-soft hover:underline decoration-2 underline-offset-4">D. N. Borisov</span>
+<span class="flex items-center justify-center w-5 h-5 bg-[#A6CE39] rounded-full text-white text-[10px] font-bold" title="ORCID ID">iD</span>
+<div class="absolute bottom-full left-0 mb-2 hidden group-hover:block w-64 bg-slate-800 text-white text-xs p-3 rounded-lg shadow-xl z-20">
+                                            Institute of Applied Physics, Russian Academy of Sciences
+                                        </div>
+</div>
+</div>
+<div class="text-sm text-text-muted dark:text-gray-400 italic">
+                                    Received: 12 Jan 2026 / Accepted: 05 Mar 2026 / Published: 15 Mar 2026
+                                </div>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 mb-10 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary to-accent"></div>
+<h2 class="text-2xl font-display font-bold text-text-main dark:text-white mb-4 flex items-center gap-2">
+                                Abstract
+                            </h2>
+<p class="text-text-muted dark:text-gray-300 leading-relaxed text-lg">
+                                This paper presents a comprehensive electrodynamic analysis of microstrip antenna arrays designed for high-precision positioning of mobile objects using Global Navigation Satellite System (GNSS) signals. We propose a novel approach to minimize multipath errors by optimizing the array geometry and employing a specialized substrate material with high permittivity. Numerical simulations using the Finite Element Method (FEM) demonstrate a significant improvement in the axial ratio bandwidth and phase center stability compared to conventional designs. Experimental results obtained from a prototype array confirm the theoretical predictions, showing a positioning accuracy improvement of up to 15% in challenging urban environments. The proposed antenna system is suitable for integration into autonomous vehicles and precision agriculture machinery.
+                            </p>
+</div>
+<div class="prose prose-lg prose-slate dark:prose-invert max-w-none text-text-muted dark:text-gray-300">
+<h3 class="text-xl font-display font-bold text-text-main dark:text-white mt-8 mb-4">1. Introduction</h3>
+<p class="mb-4">
+                                Global Navigation Satellite Systems (GNSS) play a pivotal role in modern navigation...
+                                <span class="bg-gradient-to-r from-transparent to-white dark:to-background-dark inline-block w-full h-8 -mt-8 relative z-10"></span>
+</p>
+<div class="flex flex-col items-center justify-center py-12 bg-white/50 dark:bg-surface-dark/50 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl">
+<span class="material-symbols-outlined text-4xl text-primary/50 mb-2">lock</span>
+<p class="font-semibold text-text-main dark:text-white">Full content available via PDF</p>
+<p class="text-sm text-text-muted mb-4">Download the full article to read more.</p>
+<button class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg font-bold text-sm transition-colors">
+                                    Download PDF
+                                </button>
+</div>
+</div>
+<div class="mt-12 pt-10 border-t border-gray-200 dark:border-gray-800">
+<h3 class="text-xl font-display font-bold text-text-main dark:text-white mb-6">References</h3>
+<ol class="list-decimal list-outside ml-5 space-y-4 text-sm text-text-muted dark:text-gray-400">
+<li>
+                                    S. K. Sharma and L. Shafai, "Beam focusing properties of circular microstrip antenna," <em class="italic">IEEE Trans. Antennas Propag.</em>, vol. 53, no. 11, pp. 3438–3443, Nov. 2005.
+                                </li>
+<li>
+                                    C. A. Balanis, <em class="italic">Antenna Theory: Analysis and Design</em>, 3rd ed. Hoboken, NJ: Wiley, 2005.
+                                </li>
+<li>
+                                    J.-S. Jung et al., "Compact microstrip antenna with high permittivity substrate for GNSS applications," in <em class="italic">Proc. IEEE Int. Symp. Antennas Propag.</em>, 2021, pp. 145–146.
+                                </li>
+</ol>
+</div>
+</div>
+<div class="lg:col-span-4 space-y-6">
+<div class="glass-panel rounded-2xl p-6 shadow-glass relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+<h3 class="font-display font-bold text-lg text-text-main dark:text-white mb-4 relative z-10">Quick Actions</h3>
+<div class="flex flex-col gap-3 relative z-10">
+<button class="flex items-center justify-between w-full p-3 bg-primary text-white rounded-xl shadow-lg shadow-primary/25 hover:bg-primary-dark hover:scale-[1.02] transition-all duration-300 group/btn">
+<span class="font-bold flex items-center gap-2"><span class="material-symbols-outlined">picture_as_pdf</span> Download PDF</span>
+<span class="bg-white/20 rounded-lg px-2 py-0.5 text-xs font-mono">2.4 MB</span>
+</button>
+<button class="flex items-center gap-3 w-full p-3 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-main dark:text-white rounded-xl hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined text-primary">format_quote</span>
+<span class="font-semibold text-sm">Cite Article</span>
+</button>
+<button class="flex items-center gap-3 w-full p-3 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-main dark:text-white rounded-xl hover:border-accent hover:text-accent transition-all">
+<span class="material-symbols-outlined text-accent">share</span>
+<span class="font-semibold text-sm">Share</span>
+</button>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark rounded-2xl shadow-soft border border-gray-100 dark:border-gray-800 p-6">
+<h3 class="font-display font-bold text-lg text-text-main dark:text-white mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">bar_chart</span>
+                                Metrics
+                            </h3>
+<div class="grid grid-cols-3 gap-2">
+<div class="flex flex-col items-center justify-center p-3 bg-background-light dark:bg-slate-800/50 rounded-xl border border-soft-teal dark:border-slate-700">
+<span class="text-2xl font-bold text-text-main dark:text-white">1,245</span>
+<span class="text-xs text-text-muted font-medium mt-1">Views</span>
+</div>
+<div class="flex flex-col items-center justify-center p-3 bg-background-light dark:bg-slate-800/50 rounded-xl border border-soft-teal dark:border-slate-700">
+<span class="text-2xl font-bold text-primary">856</span>
+<span class="text-xs text-text-muted font-medium mt-1">Downloads</span>
+</div>
+<div class="flex flex-col items-center justify-center p-3 bg-background-light dark:bg-slate-800/50 rounded-xl border border-soft-teal dark:border-slate-700">
+<span class="text-2xl font-bold text-accent">12</span>
+<span class="text-xs text-text-muted font-medium mt-1">Citations</span>
+</div>
+</div>
+<a class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-dark mt-4" href="#">
+                                View detailed analytics <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+<h3 class="font-display font-bold text-lg text-text-main dark:text-white mb-4">Keywords</h3>
+<div class="flex flex-wrap gap-2">
+<a class="px-3 py-1.5 bg-gray-50 dark:bg-slate-800 text-text-muted dark:text-gray-300 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary hover:text-primary transition-colors" href="#">Microstrip Antenna</a>
+<a class="px-3 py-1.5 bg-gray-50 dark:bg-slate-800 text-text-muted dark:text-gray-300 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary hover:text-primary transition-colors" href="#">GNSS</a>
+<a class="px-3 py-1.5 bg-gray-50 dark:bg-slate-800 text-text-muted dark:text-gray-300 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary hover:text-primary transition-colors" href="#">Multipath Mitigation</a>
+<a class="px-3 py-1.5 bg-gray-50 dark:bg-slate-800 text-text-muted dark:text-gray-300 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary hover:text-primary transition-colors" href="#">Positioning</a>
+<a class="px-3 py-1.5 bg-gray-50 dark:bg-slate-800 text-text-muted dark:text-gray-300 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary hover:text-primary transition-colors" href="#">FEM Analysis</a>
+</div>
+</div>
+<div class="bg-gradient-to-br from-ocean-blue to-primary-dark rounded-2xl p-6 text-white relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+<h3 class="font-display font-bold text-lg mb-2 relative z-10">Part of Issue No. 5</h3>
+<p class="text-white/80 text-sm mb-4 relative z-10">Published in Antennas, Volume 14, 2026.</p>
+<a class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-bold transition-all relative z-10" href="#">
+                                Browse Issue <span class="material-symbols-outlined text-[16px]">arrow_right_alt</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-white dark:bg-surface-dark border-t border-gray-100 dark:border-gray-800 pt-16 pb-12 relative z-10">
+<div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10 mb-16">
+<div class="col-span-2 lg:col-span-2 pr-8">
+<div class="flex items-center gap-2 mb-6">
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">science</span>
+</div>
+<span class="text-xl font-bold font-display text-text-main dark:text-white">SciPub</span>
+</div>
+<p class="text-text-muted dark:text-gray-400 max-w-sm mb-8 font-medium leading-relaxed">
+                        We are empowering the scientific community with friendlier tools for discovery and dissemination. Science is for everyone.
+                    </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-text-muted hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[20px]">public</span></a>
+<a class="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-text-muted hover:bg-accent hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[20px]">share</span></a>
+<a class="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-text-muted hover:bg-secondary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[20px]">mail</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-text-main dark:text-white mb-6 text-lg">Journals</h4>
+<ul class="space-y-3 text-sm font-medium text-text-muted dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Life Sciences</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Physical Sciences</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Health Sciences</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Social Sciences</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-text-main dark:text-white mb-6 text-lg">Resources</h4>
+<ul class="space-y-3 text-sm font-medium text-text-muted dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors block py-1" href="#">For Authors</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">For Editors</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">For Librarians</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Open Access Policy</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-text-main dark:text-white mb-6 text-lg">Company</h4>
+<ul class="space-y-3 text-sm font-medium text-text-muted dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Our Story</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Newsroom</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Contact Us</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm font-medium text-text-muted dark:text-gray-500">
+<p>© 2024 SciPub Inc. Crafted with care.</p>
+<div class="flex gap-8">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Cookie Settings</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }} — {{ journal.name if journal else 'Издательство' }}{% endblock %}
+
+{% block head %}
+<!-- SEO: meta for articles -->
+{% if article.abstract %}
+<meta name="description" content="{{ article.abstract[:200] }}">
+{% endif %}
+{% if article.keywords %}
+<meta name="keywords" content="{{ article.keywords }}">
+{% endif %}
+{% if article.doi %}
+<meta name="citation_doi" content="{{ article.doi }}">
+{% endif %}
+<meta name="citation_title" content="{{ article.title }}">
+{% for author in article.authors %}
+<meta name="citation_author" content="{{ author.full_name }}">
+{% endfor %}
+{% if journal %}
+<meta name="citation_journal_title" content="{{ journal.name }}">
+{% if journal.issn %}
+<meta name="citation_issn" content="{{ journal.issn }}">
+{% endif %}
+{% endif %}
+{% if issue %}
+<meta name="citation_volume" content="{{ issue.volume or '' }}">
+<meta name="citation_issue" content="{{ issue.number }}">
+<meta name="citation_year" content="{{ issue.year }}">
+{% endif %}
+{% if article.pages_from %}
+<meta name="citation_firstpage" content="{{ article.pages_from }}">
+{% endif %}
+{% if article.pages_to %}
+<meta name="citation_lastpage" content="{{ article.pages_to }}">
+{% endif %}
+{% if article.pdf_file %}
+<meta name="citation_pdf_url" content="{{ url_for('static', filename='uploads/pdfs/' + article.pdf_file, _external=True) }}">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    [data-theme="dark"] .glass-panel {
+        background: rgba(30, 41, 59, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+</style>
+<section class="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24">
+
+    <!-- Breadcrumbs -->
+    <div class="flex items-center gap-2 mb-6 flex-wrap">
+        <a class="text-sm text-text-muted hover:text-primary transition-colors no-underline" href="/">Главная</a>
+        <span class="text-text-muted/50">/</span>
+        <a class="text-sm text-text-muted hover:text-primary transition-colors no-underline" href="/journals">Журналы</a>
+        {% if journal %}
+        <span class="text-text-muted/50">/</span>
+        <a class="text-sm text-text-muted hover:text-primary transition-colors no-underline" href="/journal/{{ journal.slug }}">{{ journal.name }}</a>
+        {% endif %}
+        {% if issue and journal %}
+        <span class="text-text-muted/50">/</span>
+        <a class="text-sm text-text-muted hover:text-primary transition-colors no-underline" href="/journal/{{ journal.slug }}/issue/{{ issue.id }}">№{{ issue.number }}/{{ issue.year }}</a>
+        {% endif %}
+        <span class="text-text-muted/50">/</span>
+        <span class="text-sm font-semibold text-primary truncate max-w-[200px] sm:max-w-xs">Статья</span>
+    </div>
+
+    <!-- Two-column layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+
+        <!-- ===== LEFT: Main content ===== -->
+        <div class="lg:col-span-8">
+
+            <!-- Title block -->
+            <div class="mb-8">
+                <!-- Badges -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    {% if article.language %}
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200 [data-theme=dark]:bg-purple-900/30 [data-theme=dark]:text-purple-400 [data-theme=dark]:border-purple-800">
+                        {{ 'Русский' if article.language == 'ru' else article.language|upper }}
+                    </span>
+                    {% endif %}
+                    {% if article.doi %}
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-800 border border-sky-200 [data-theme=dark]:bg-sky-900/30 [data-theme=dark]:text-sky-400 [data-theme=dark]:border-sky-800">
+                        DOI
+                    </span>
+                    {% endif %}
+                    {% if article.pdf_file %}
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 [data-theme=dark]:bg-emerald-900/30 [data-theme=dark]:text-emerald-400 [data-theme=dark]:border-emerald-800">
+                        PDF
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Title -->
+                <h1 class="font-display text-3xl sm:text-4xl md:text-[2.75rem] font-bold text-text-main [data-theme=dark]:text-white mb-4 leading-[1.15] m-0">
+                    {{ article.title }}
+                </h1>
+
+                {% if article.title_en %}
+                <p class="text-lg text-text-muted [data-theme=dark]:text-gray-400 italic mb-4 m-0">
+                    {{ article.title_en }}
+                </p>
+                {% endif %}
+
+                <!-- Authors -->
+                {% if article.authors %}
+                <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-base mb-4">
+                    {% for author in article.authors %}
+                    {% if article._looks_like_name(author.full_name) %}
+                    <div class="group relative flex items-center gap-1.5">
+                        <span class="font-bold text-primary [data-theme=dark]:text-primary-soft">{{ article._clean_name(author.full_name) }}</span>
+                        {% if author.orcid %}
+                        <a href="https://orcid.org/{{ author.orcid }}" target="_blank" class="flex items-center justify-center w-5 h-5 bg-[#A6CE39] rounded-full text-white text-[10px] font-bold no-underline" title="ORCID">iD</a>
+                        {% endif %}
+                        {% if author.affiliation or author.email %}
+                        <div class="absolute bottom-full left-0 mb-2 hidden group-hover:block w-64 bg-slate-800 text-white text-xs p-3 rounded-lg shadow-xl z-20">
+                            {% if author.affiliation %}{{ author.affiliation }}{% endif %}
+                            {% if author.email %}<br><a href="mailto:{{ author.email }}" class="text-primary-soft">{{ author.email }}</a>{% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Dates -->
+                {% if issue and issue.publication_date %}
+                <div class="text-sm text-text-muted [data-theme=dark]:text-gray-400 italic">
+                    Опубликовано: {{ issue.publication_date }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Abstract -->
+            {% if article.abstract %}
+            <div class="bg-white [data-theme=dark]:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 [data-theme=dark]:border-gray-800 p-8 mb-6 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary to-accent"></div>
+                <h2 class="text-2xl font-display font-bold text-text-main [data-theme=dark]:text-white mb-4 m-0">
+                    Аннотация
+                </h2>
+                <p class="text-text-muted [data-theme=dark]:text-gray-300 leading-relaxed text-base m-0">
+                    {{ article.abstract }}
+                </p>
+            </div>
+            {% endif %}
+
+            {% if article.abstract_en %}
+            <div class="bg-white [data-theme=dark]:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 [data-theme=dark]:border-gray-800 p-8 mb-6 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-accent to-secondary"></div>
+                <h2 class="text-2xl font-display font-bold text-text-main [data-theme=dark]:text-white mb-4 m-0">
+                    Abstract
+                </h2>
+                <p class="text-text-muted [data-theme=dark]:text-gray-300 leading-relaxed text-base m-0">
+                    {{ article.abstract_en }}
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- PDF download block -->
+            {% if article.pdf_file %}
+            <div class="flex flex-col items-center justify-center py-10 bg-white/50 [data-theme=dark]:bg-surface-dark/50 border border-dashed border-gray-300 [data-theme=dark]:border-gray-700 rounded-xl mb-6">
+                <span class="material-symbols-outlined text-4xl text-primary/50 mb-2">picture_as_pdf</span>
+                <p class="font-semibold text-text-main [data-theme=dark]:text-white m-0">Полный текст доступен в PDF</p>
+                <p class="text-sm text-text-muted mb-4 m-0">Скачайте статью для ознакомления</p>
+                <a href="{{ url_for('static', filename='uploads/pdfs/' + article.pdf_file) }}" target="_blank"
+                   class="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg font-bold text-sm transition-colors no-underline">
+                    Скачать PDF
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- ===== RIGHT: Sidebar ===== -->
+        <div class="lg:col-span-4 space-y-6">
+
+            <!-- Quick Actions -->
+            <div class="glass-panel rounded-2xl p-6 shadow-glass relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+                <h3 class="font-display font-bold text-lg text-text-main [data-theme=dark]:text-white mb-4 relative z-10 m-0">Действия</h3>
+                <div class="flex flex-col gap-3 relative z-10">
+                    {% if article.pdf_file %}
+                    <a href="{{ url_for('static', filename='uploads/pdfs/' + article.pdf_file) }}" target="_blank"
+                       class="flex items-center justify-between w-full p-3 bg-primary text-white rounded-xl shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all no-underline">
+                        <span class="font-bold flex items-center gap-2"><span class="material-symbols-outlined">picture_as_pdf</span> Скачать PDF</span>
+                    </a>
+                    {% endif %}
+                    {% if article.doi %}
+                    <a href="https://doi.org/{{ article.doi }}" target="_blank"
+                       class="flex items-center gap-3 w-full p-3 bg-white [data-theme=dark]:bg-surface-dark border border-gray-200 [data-theme=dark]:border-gray-700 text-text-main [data-theme=dark]:text-white rounded-xl hover:border-primary hover:text-primary transition-all no-underline">
+                        <span class="material-symbols-outlined text-primary">link</span>
+                        <span class="font-semibold text-sm">DOI: {{ article.doi }}</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Bibliographic info -->
+            <div class="bg-white [data-theme=dark]:bg-surface-dark rounded-2xl shadow-soft border border-gray-100 [data-theme=dark]:border-gray-800 p-6">
+                <h3 class="font-display font-bold text-lg text-text-main [data-theme=dark]:text-white mb-4 flex items-center gap-2 m-0">
+                    <span class="material-symbols-outlined text-primary">info</span>
+                    Библиография
+                </h3>
+                <div class="space-y-3 text-sm">
+                    {% if article.pages_str %}
+                    <div class="flex justify-between">
+                        <span class="text-text-muted">Страницы</span>
+                        <span class="font-semibold text-text-main [data-theme=dark]:text-white">{{ article.pages_str }}</span>
+                    </div>
+                    {% endif %}
+                    {% if article.language %}
+                    <div class="flex justify-between">
+                        <span class="text-text-muted">Язык</span>
+                        <span class="font-semibold text-text-main [data-theme=dark]:text-white">{{ 'Русский' if article.language == 'ru' else article.language|upper }}</span>
+                    </div>
+                    {% endif %}
+                    {% if journal %}
+                    <div class="flex justify-between">
+                        <span class="text-text-muted">Журнал</span>
+                        <a href="/journal/{{ journal.slug }}" class="font-semibold text-primary hover:text-primary-dark no-underline">{{ journal.name }}</a>
+                    </div>
+                    {% endif %}
+                    {% if issue %}
+                    <div class="flex justify-between">
+                        <span class="text-text-muted">Выпуск</span>
+                        <span class="font-semibold text-text-main [data-theme=dark]:text-white">№{{ issue.number }}{% if issue.volume %}, т. {{ issue.volume }}{% endif %}, {{ issue.year }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Keywords -->
+            {% if article.keywords %}
+            <div class="bg-white [data-theme=dark]:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 [data-theme=dark]:border-gray-800 p-6">
+                <h3 class="font-display font-bold text-lg text-text-main [data-theme=dark]:text-white mb-4 m-0">Ключевые слова</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for kw in article.keywords.split(',') %}
+                    <span class="px-3 py-1.5 bg-gray-50 [data-theme=dark]:bg-slate-800 text-text-muted [data-theme=dark]:text-gray-300 text-xs font-medium rounded-lg border border-gray-200 [data-theme=dark]:border-gray-700">{{ kw.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if article.keywords_en %}
+            <div class="bg-white [data-theme=dark]:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 [data-theme=dark]:border-gray-800 p-6">
+                <h3 class="font-display font-bold text-lg text-text-main [data-theme=dark]:text-white mb-4 m-0">Keywords</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for kw in article.keywords_en.split(',') %}
+                    <span class="px-3 py-1.5 bg-gray-50 [data-theme=dark]:bg-slate-800 text-text-muted [data-theme=dark]:text-gray-300 text-xs font-medium rounded-lg border border-gray-200 [data-theme=dark]:border-gray-700">{{ kw.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Issue card -->
+            {% if issue and journal %}
+            <div class="bg-gradient-to-br from-ocean-blue to-primary-dark rounded-2xl p-6 text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                <h3 class="font-display font-bold text-lg mb-2 relative z-10 m-0">Выпуск №{{ issue.number }}/{{ issue.year }}</h3>
+                <p class="text-white/80 text-sm mb-4 relative z-10 m-0">{{ journal.name }}{% if journal.issn %}, ISSN: {{ journal.issn }}{% endif %}</p>
+                <a href="/journal/{{ journal.slug }}/issue/{{ issue.id }}" class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-bold transition-all relative z-10 no-underline text-white">
+                    Перейти к выпуску <span class="material-symbols-outlined text-[16px]">arrow_right_alt</span>
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</section>
+{% endblock %}

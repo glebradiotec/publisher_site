@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}{{ journal.name }} — №{{ issue.number }}/{{ issue.year }}{% endblock %}
+
+{% block content %}
+<style>
+    .article-card {
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .article-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 30px -5px rgba(13, 148, 136, 0.1), 0 8px 8px -6px rgba(0, 0, 0, 0.01);
+        border-color: rgba(13, 148, 136, 0.2) !important;
+    }
+    [data-theme="dark"] .article-card:hover {
+        box-shadow: 0 15px 30px -5px rgba(94, 234, 212, 0.08);
+        border-color: rgba(94, 234, 212, 0.2) !important;
+    }
+</style>
+
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24">
+
+    <!-- ===== HEADER ===== -->
+    <div class="flex flex-col gap-6 mb-8">
+        <!-- Breadcrumbs -->
+        <div class="flex items-center gap-2 mb-1 flex-wrap">
+            <a class="text-sm text-text-muted hover:text-primary transition-colors no-underline" href="/">Главная</a>
+            <span class="text-text-muted/50">/</span>
+            <a class="text-sm text-text-muted hover:text-primary transition-colors no-underline" href="/journals">Журналы</a>
+            <span class="text-text-muted/50">/</span>
+            <a class="text-sm text-text-muted hover:text-primary transition-colors no-underline" href="/journal/{{ journal.slug }}">{{ journal.name }}</a>
+            <span class="text-text-muted/50">/</span>
+            <span class="text-sm font-semibold text-primary">№{{ issue.number }}/{{ issue.year }}</span>
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="font-display text-4xl md:text-5xl font-bold text-text-main [data-theme=dark]:text-white mb-2 m-0">
+                    №{{ issue.number }}{% if issue.volume %}, т. {{ issue.volume }}{% endif %} / {{ issue.year }}
+                </h1>
+                <p class="text-text-muted [data-theme=dark]:text-gray-400 font-mono text-sm m-0">
+                    {{ journal.name }} · ISSN: {{ journal.issn or '—' }}
+                    {% if issue.publication_date %} · {{ issue.publication_date }}{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== DESCRIPTION ===== -->
+    {% if issue.description %}
+    <div class="bg-white [data-theme=dark]:bg-surface-dark rounded-xl border border-gray-100 [data-theme=dark]:border-gray-800 p-6 mb-8 text-text-muted [data-theme=dark]:text-gray-300 leading-relaxed">
+        {{ issue.description|safe }}
+    </div>
+    {% endif %}
+
+    <!-- ===== STATS BAR ===== -->
+    <div class="w-full bg-white/40 [data-theme=dark]:bg-surface-dark/40 backdrop-blur-md border border-white/60 [data-theme=dark]:border-white/10 rounded-xl p-4 md:px-8 md:py-5 shadow-sm mb-8 flex flex-wrap items-center gap-4 md:gap-8">
+        <div class="flex items-center gap-2 text-text-main [data-theme=dark]:text-white font-medium">
+            <span class="material-symbols-outlined text-text-muted">library_books</span>
+            <span class="font-bold">{{ articles|length }}</span>
+            {{ articles|length|pluralize_ru('статья', 'статьи', 'статей') }}
+        </div>
+        {% if issue.cover_image or journal.cover_image %}
+        <div class="w-px h-6 bg-gray-300 [data-theme=dark]:bg-gray-700 hidden md:block"></div>
+        <div class="flex items-center gap-2 text-text-muted font-medium">
+            <span class="material-symbols-outlined text-primary">menu_book</span>
+            <span>{{ journal.name }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ===== SEARCH ===== -->
+    {% if articles|length > 3 %}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div class="relative w-full md:w-80">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                <span class="material-symbols-outlined text-[20px]">search</span>
+            </span>
+            <input id="article-filter"
+                   class="w-full pl-10 pr-4 py-2.5 bg-white [data-theme=dark]:bg-surface-dark border border-gray-200 [data-theme=dark]:border-gray-700 rounded-lg text-sm text-text-main [data-theme=dark]:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all focus:outline-none"
+                   placeholder="Поиск по статьям..." type="text" autocomplete="off">
+        </div>
+        <div class="text-sm text-text-muted" id="article-count">
+            {{ articles|length }} {{ articles|length|pluralize_ru('статья', 'статьи', 'статей') }}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ===== ARTICLES LIST ===== -->
+    {% if articles %}
+    <div id="articles-list" class="space-y-4">
+        {% for article in articles %}
+        <a href="/article/{{ article.id }}" class="no-underline article-card bg-white [data-theme=dark]:bg-surface-dark rounded-lg shadow-sm border border-gray-100 [data-theme=dark]:border-gray-800 px-4 py-3 group flex items-start gap-2.5 block"
+             data-title="{{ article.title|lower }}" data-authors="{{ article.authors_str|lower }}">
+
+            <span class="shrink-0 w-7 h-7 rounded-md bg-teal-50 [data-theme=dark]:bg-teal-900/20 text-primary flex items-center justify-center font-bold text-xs mt-0.5">
+                {{ loop.index }}
+            </span>
+
+            <div class="flex-1 min-w-0">
+                <h3 class="text-base font-display font-bold text-text-main [data-theme=dark]:text-white leading-snug group-hover:text-primary transition-colors m-0">
+                    {{ article.title }}
+                </h3>
+                <p class="text-sm text-text-muted [data-theme=dark]:text-gray-400 m-0 mt-1">
+                    {{ article.authors_str or 'Автор не указан' }}
+                </p>
+                {% if article.pages_str or article.pdf_file %}
+                <div class="flex items-center gap-2 mt-1.5">
+                    {% if article.pages_str %}
+                    <span class="text-xs text-text-muted/70">С. {{ article.pages_str }}</span>
+                    {% endif %}
+                    {% if article.pdf_file %}
+                    <span class="text-xs text-emerald-600 [data-theme=dark]:text-emerald-400 font-medium">PDF</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white [data-theme=dark]:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 [data-theme=dark]:border-gray-800 p-12 text-center">
+        <span class="material-symbols-outlined text-[48px] text-text-muted/30 mb-4">article</span>
+        <h3 class="text-lg font-bold text-text-main [data-theme=dark]:text-white mb-2 m-0">Статьи пока не добавлены</h3>
+        <p class="text-text-muted m-0">Содержание этого выпуска ещё формируется.</p>
+    </div>
+    {% endif %}
+
+    <!-- ===== BACK LINK ===== -->
+    <div class="mt-12 flex justify-center">
+        <a href="/journal/{{ journal.slug }}" class="flex items-center gap-2 px-6 py-3 bg-white [data-theme=dark]:bg-surface-dark border border-gray-200 [data-theme=dark]:border-gray-700 rounded-xl text-sm font-bold text-text-main [data-theme=dark]:text-white hover:border-primary hover:text-primary transition-all no-underline">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            Все выпуски журнала
+        </a>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+    var input = document.getElementById('article-filter');
+    if (!input) return;
+    var cards = document.querySelectorAll('#articles-list .article-card');
+    var countEl = document.getElementById('article-count');
+    input.addEventListener('input', function(){
+        var q = this.value.toLowerCase().trim();
+        var shown = 0;
+        cards.forEach(function(card){
+            var title = card.dataset.title || '';
+            var authors = card.dataset.authors || '';
+            if (!q || title.indexOf(q) !== -1 || authors.indexOf(q) !== -1) {
+                card.style.display = '';
+                shown++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        if (countEl) countEl.textContent = shown + ' из ' + cards.length;
+    });
+})();
+</script>
+{% endblock %}

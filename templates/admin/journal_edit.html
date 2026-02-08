@@ -1,0 +1,230 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Редактировать' if journal else 'Добавить' }} журнал — CMS{% endblock %}
+
+{% block admin_content %}
+<style>
+    .je-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+    .je-header h1 { margin:0; font-size:22px; }
+    .je-back { font-size:13px; color:var(--color-fg-muted,#64748b); text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+    .je-back:hover { color:#0D9488; }
+
+    .je-form { max-width:800px; }
+    .je-section {
+        background: var(--color-canvas-default, #fff);
+        border: 1.5px solid var(--color-border-default, #e2e8f0);
+        border-radius: 12px; padding: 24px; margin-bottom: 20px;
+    }
+    .je-section-title {
+        font-size: 15px; font-weight: 700; margin: 0 0 16px;
+        display: flex; align-items: center; gap: 8px;
+        color: var(--color-fg-default, #0f172a);
+    }
+    .je-section-title .material-symbols-outlined { font-size:20px; color:#0D9488; }
+
+    .je-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+    .je-row-full { margin-bottom:14px; }
+    .je-label { display:block; font-size:13px; font-weight:600; margin-bottom:5px; color:var(--color-fg-default,#0f172a); }
+    .je-input, .je-textarea {
+        width:100%; padding:9px 12px; border:1.5px solid var(--color-border-default,#e2e8f0);
+        border-radius:8px; font-size:14px; background:var(--color-canvas-subtle,#f8fafc);
+        transition: border-color 0.2s; box-sizing:border-box; font-family:inherit;
+    }
+    .je-input:focus, .je-textarea:focus {
+        border-color:#0D9488; outline:none; background:#fff;
+    }
+    .je-textarea { resize:vertical; min-height:100px; }
+    .je-hint { font-size:12px; color:var(--color-fg-muted,#64748b); margin-top:4px; }
+
+    .je-cover-preview { display:flex; align-items:center; gap:16px; margin-bottom:12px; }
+    .je-cover-preview img { width:80px; height:110px; object-fit:cover; border-radius:8px; border:1px solid var(--color-border-default,#e2e8f0); }
+
+    .je-toggle {
+        display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:600; font-size:14px;
+        padding:10px 16px; border-radius:10px; border:1.5px solid var(--color-border-default,#e2e8f0);
+        background:var(--color-canvas-subtle,#f8fafc); transition:all 0.2s;
+    }
+    .je-toggle:hover { border-color:#0D9488; }
+    .je-toggle input { width:18px; height:18px; accent-color:#0D9488; cursor:pointer; }
+
+    .je-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .je-btn-save {
+        padding:10px 28px; background:#0D9488; color:#fff; border:none; border-radius:10px;
+        font-weight:700; font-size:14px; cursor:pointer; transition:background 0.2s;
+    }
+    .je-btn-save:hover { background:#115E59; }
+    .je-btn-cancel {
+        padding:10px 20px; background:transparent; color:var(--color-fg-muted,#64748b);
+        border:1.5px solid var(--color-border-default,#e2e8f0); border-radius:10px;
+        font-weight:600; font-size:14px; cursor:pointer; text-decoration:none;
+        transition:all 0.2s;
+    }
+    .je-btn-cancel:hover { border-color:#0D9488; color:#0D9488; }
+    .je-btn-danger {
+        padding:10px 20px; background:transparent; color:#dc2626;
+        border:1.5px solid #fca5a5; border-radius:10px;
+        font-weight:600; font-size:14px; cursor:pointer;
+        transition:all 0.2s; margin-left:auto;
+    }
+    .je-btn-danger:hover { background:#fef2f2; border-color:#dc2626; }
+
+    .je-quick-links { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+    .je-quick-link {
+        display:inline-flex; align-items:center; gap:5px; padding:6px 14px;
+        border:1.5px solid var(--color-border-default,#e2e8f0); border-radius:8px;
+        font-size:13px; font-weight:600; color:var(--color-fg-muted,#64748b);
+        text-decoration:none; transition:all 0.2s;
+    }
+    .je-quick-link:hover { border-color:#0D9488; color:#0D9488; }
+    .je-quick-link .material-symbols-outlined { font-size:16px; }
+</style>
+
+<!-- Header -->
+<div class="je-header">
+    <a href="/admin/journals" class="je-back">
+        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span> Журналы
+    </a>
+    <span style="color:var(--color-fg-muted);">/</span>
+    <h1>{{ journal.name if journal else 'Новый журнал' }}</h1>
+</div>
+
+{% if journal %}
+<div class="je-quick-links">
+    <a href="/admin/journal/{{ journal.id }}/issues" class="je-quick-link">
+        <span class="material-symbols-outlined">library_books</span> Выпуски ({{ journal.issues|length }})
+    </a>
+    <a href="/journal/{{ journal.slug }}" target="_blank" class="je-quick-link">
+        <span class="material-symbols-outlined">open_in_new</span> Открыть на сайте
+    </a>
+</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="je-form">
+
+    <!-- Section: Basic Info -->
+    <div class="je-section">
+        <div class="je-section-title">
+            <span class="material-symbols-outlined">edit_note</span> Основная информация
+        </div>
+        <div class="je-row-full">
+            <label class="je-label">Название *</label>
+            <input type="text" name="name" class="je-input" value="{{ journal.name if journal else '' }}" required>
+        </div>
+        <div class="je-row">
+            <div>
+                <label class="je-label">Slug (URL)</label>
+                <input type="text" name="slug" class="je-input" value="{{ journal.slug if journal else '' }}" placeholder="auto">
+                <div class="je-hint">Латиницей, через дефис. Если пусто — создаётся автоматически.</div>
+            </div>
+            <div>
+                <label class="je-label">Порядок отображения</label>
+                <input type="number" name="order" class="je-input" value="{{ journal.order if journal else 0 }}" min="0">
+                <div class="je-hint">Меньше = выше в списке.</div>
+            </div>
+        </div>
+        <div class="je-row">
+            <div>
+                <label class="je-label">ISSN</label>
+                <input type="text" name="issn" class="je-input" value="{{ journal.issn if journal else '' }}" placeholder="0000-0000">
+            </div>
+            <div>
+                <label class="je-label">eISSN</label>
+                <input type="text" name="eissn" class="je-input" value="{{ journal.eissn if journal else '' }}" placeholder="0000-0000">
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Description -->
+    <div class="je-section">
+        <div class="je-section-title">
+            <span class="material-symbols-outlined">description</span> Описание и содержание
+        </div>
+        <div class="je-row-full">
+            <label class="je-label">Краткое описание</label>
+            <textarea name="description" class="je-textarea" rows="3">{{ journal.description if journal else '' }}</textarea>
+        </div>
+        <div class="je-row-full">
+            <label class="je-label">Цели и область (Aims & Scope)</label>
+            <textarea name="aims_scope" class="je-textarea" rows="5">{{ journal.aims_scope if journal else '' }}</textarea>
+        </div>
+    </div>
+
+    <!-- Section: Editorial -->
+    <div class="je-section">
+        <div class="je-section-title">
+            <span class="material-symbols-outlined">groups</span> Редколлегия и публикация
+        </div>
+        <div class="je-row-full">
+            <label class="je-label">Редколлегия</label>
+            <textarea name="editorial_board" class="je-textarea" rows="5">{{ journal.editorial_board if journal else '' }}</textarea>
+            <div class="je-hint">Можно использовать HTML.</div>
+        </div>
+        <div class="je-row-full">
+            <label class="je-label">Информация для авторов</label>
+            <textarea name="submission_info" class="je-textarea" rows="5">{{ journal.submission_info if journal else '' }}</textarea>
+            <div class="je-hint">Правила оформления, требования к рукописям.</div>
+        </div>
+    </div>
+
+    <!-- Section: Cover -->
+    <div class="je-section">
+        <div class="je-section-title">
+            <span class="material-symbols-outlined">image</span> Обложка
+        </div>
+        {% if journal and journal.cover_image %}
+        <div class="je-cover-preview">
+            <img src="{{ url_for('static', filename='uploads/covers/' + journal.cover_image) }}" alt="Обложка">
+            <div>
+                <div style="font-size:13px; font-weight:600; margin-bottom:4px;">{{ journal.cover_image }}</div>
+                <label style="font-size:13px; cursor:pointer; color:#dc2626; display:flex; align-items:center; gap:6px;">
+                    <input type="checkbox" name="delete_cover"> Удалить обложку
+                </label>
+            </div>
+        </div>
+        {% endif %}
+        <div class="je-row-full">
+            <label class="je-label">{{ 'Заменить обложку' if journal and journal.cover_image else 'Загрузить обложку' }}</label>
+            <input type="file" name="cover_image" class="je-input" accept="image/*" style="padding:8px;">
+        </div>
+    </div>
+
+    <!-- Section: Visibility -->
+    <div class="je-section">
+        <div class="je-section-title">
+            <span class="material-symbols-outlined">visibility</span> Видимость
+        </div>
+        <label class="je-toggle">
+            <input type="checkbox" name="is_active" value="1"
+                   {% if not journal or journal.is_active %}checked{% endif %}>
+            Показывать на странице журналов
+        </label>
+        <div class="je-hint" style="margin-top:8px;">Скрытый журнал остаётся доступен по прямой ссылке.</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="je-actions">
+        <button type="submit" class="je-btn-save">{{ 'Сохранить изменения' if journal else 'Создать журнал' }}</button>
+        <a href="/admin/journals" class="je-btn-cancel">Отмена</a>
+        {% if journal %}
+        <button type="button" class="je-btn-danger" id="delete-journal-btn">Удалить журнал</button>
+        {% endif %}
+    </div>
+</form>
+
+{% if journal %}
+<script>
+document.getElementById('delete-journal-btn').addEventListener('click', function() {
+    if (!confirm('Удалить журнал «{{ journal.name }}»? Это действие нельзя отменить.')) return;
+    fetch('/admin/journals/{{ journal.id }}/delete', { method: 'POST' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                window.location.href = '/admin/journals';
+            } else {
+                alert(data.error || 'Ошибка удаления');
+            }
+        })
+        .catch(function() { alert('Ошибка соединения'); });
+});
+</script>
+{% endif %}
+{% endblock %}

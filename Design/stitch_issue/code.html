@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Issue No. 5 / 2026 - Antennas - SciPub</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0D9488", // Teal 600
+                        "primary-soft": "#5EEAD4", // Teal 300
+                        "primary-dark": "#115E59", // Teal 800
+                        "accent": "#0EA5E9", // Sky 500
+                        "accent-dark": "#0369A1", // Sky 700
+                        "secondary": "#06B6D4", // Cyan 500
+                        "background-light": "#F0FDFA", // Azure/Mint off-white
+                        "background-dark": "#0F172A", // Slate 900
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1E293B", // Slate 800
+                        "text-main": "#0F172A", // Slate 900
+                        "text-muted": "#475569", // Slate 600
+                        "soft-teal": "#CCFBF1", // Teal 100
+                        "soft-cyan": "#CFFAFE", // Cyan 100
+                        "soft-blue": "#E0F2FE", // Sky 100
+                        "ocean-blue": "#1E3A8A", // Blue 900
+                    },
+                    fontFamily: {
+                        "display": ["Outfit", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "3xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(13, 148, 136, 0.1)',
+                        'glow': '0 0 20px rgba(13, 148, 136, 0.3)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #99f6e4; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5eead4; 
+        }
+        .journal-card {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .journal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -5px rgba(13, 148, 136, 0.1), 0 8px 8px -6px rgba(0, 0, 0, 0.01);
+            border-color: rgba(13, 148, 136, 0.2);
+        }
+        .blob-shape {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }.form-checkbox {
+            border-radius: 4px;
+            border-color: #cbd5e1;
+            color: #0d9488;
+        }
+        .form-checkbox:focus {
+            ring-color: #5eead4;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-body text-text-main antialiased selection:bg-primary-soft selection:text-white overflow-x-hidden">
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="blob-shape bg-soft-teal w-[500px] h-[500px] rounded-full -top-20 -left-20 animate-pulse" style="animation-duration: 10s;"></div>
+<div class="blob-shape bg-soft-cyan w-[400px] h-[400px] rounded-full top-40 right-0 opacity-40"></div>
+<div class="blob-shape bg-soft-blue w-[600px] h-[600px] rounded-full -bottom-40 left-1/3 opacity-30"></div>
+</div>
+<header class="sticky top-4 z-50 w-full px-4 sm:px-6 lg:px-8">
+<div class="max-w-[1200px] mx-auto bg-white/70 dark:bg-surface-dark/70 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-2xl shadow-sm">
+<div class="flex h-16 items-center justify-between px-4 sm:px-6">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[24px]">science</span>
+</div>
+<span class="text-xl font-display font-bold tracking-tight text-text-main dark:text-white">SciPub</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-semibold text-primary hover:text-primary-dark transition-colors dark:text-white" href="#">Journals</a>
+<a class="text-sm font-semibold text-text-main/70 hover:text-primary transition-colors dark:text-gray-300" href="#">Books</a>
+<a class="text-sm font-semibold text-text-main/70 hover:text-primary transition-colors dark:text-gray-300" href="#">Submit Work</a>
+<a class="text-sm font-semibold text-text-main/70 hover:text-primary transition-colors dark:text-gray-300" href="#">Our Story</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="hidden sm:flex text-sm font-bold text-text-main dark:text-white hover:text-primary px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
+                        Log In
+                    </button>
+<button class="flex items-center justify-center rounded-xl bg-primary text-white px-5 py-2.5 text-sm font-bold hover:bg-ocean-blue hover:shadow-lg hover:shadow-primary/25 transition-all transform hover:-translate-y-0.5">
+                        Get Started
+                    </button>
+</div>
+</div>
+</div>
+</header>
+<main class="relative z-10 pt-8 pb-24">
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+<div class="flex flex-col gap-6 mb-8">
+<div>
+<div class="flex items-center gap-2 mb-3">
+<a class="text-sm text-text-muted hover:text-primary transition-colors" href="#">Home</a>
+<span class="text-text-muted/50">/</span>
+<a class="text-sm text-text-muted hover:text-primary transition-colors" href="#">Journals</a>
+<span class="text-text-muted/50">/</span>
+<a class="text-sm text-text-muted hover:text-primary transition-colors" href="#">Antennas</a>
+<span class="text-text-muted/50">/</span>
+<span class="text-sm font-semibold text-primary">Issue No. 5</span>
+</div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="font-display text-4xl md:text-5xl font-bold text-text-main dark:text-white mb-2">Issue No. 5 / 2026</h1>
+<p class="text-text-muted dark:text-gray-400 font-mono text-sm">Antennas · ISSN: 0320-9601</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-main dark:text-white px-5 py-2.5 text-sm font-bold hover:bg-gray-50 hover:shadow-sm transition-all">
+<span class="material-symbols-outlined text-[20px]">download</span> Export
+                        </button>
+<button class="flex items-center justify-center gap-2 rounded-xl bg-primary text-white px-6 py-2.5 text-sm font-bold hover:bg-ocean-blue hover:shadow-lg hover:shadow-primary/25 transition-all transform hover:-translate-y-0.5 shadow-md">
+<span class="material-symbols-outlined text-[20px]">add</span> New Article
+                        </button>
+</div>
+</div>
+</div>
+<div class="w-full bg-white/40 dark:bg-surface-dark/40 backdrop-blur-md border border-white/60 dark:border-white/10 rounded-xl p-4 md:px-8 md:py-5 shadow-sm mb-8 flex flex-wrap items-center gap-4 md:gap-8">
+<div class="flex items-center gap-2 text-text-main dark:text-white font-medium">
+<span class="material-symbols-outlined text-text-muted">library_books</span>
+<span class="font-bold">3</span> Articles
+                </div>
+<div class="w-px h-6 bg-gray-300 dark:bg-gray-700 hidden md:block"></div>
+<div class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-medium">
+<span class="material-symbols-outlined text-emerald-500 fill-current">check_circle</span>
+<span class="font-bold">3</span> Paid
+                </div>
+<div class="w-px h-6 bg-gray-300 dark:bg-gray-700 hidden md:block"></div>
+<div class="flex items-center gap-2 text-sky-700 dark:text-sky-400 font-medium">
+<span class="material-symbols-outlined text-sky-500">rate_review</span>
+<span class="font-bold">3</span> Reviewed
+                </div>
+<div class="w-px h-6 bg-gray-300 dark:bg-gray-700 hidden md:block"></div>
+<div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium">
+<span class="material-symbols-outlined text-amber-500">edit_note</span>
+<span class="font-bold">3</span> Edited
+                </div>
+</div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<div class="relative w-full md:w-80">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+<input class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-text-main dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-text-muted/60" placeholder="Search in this issue..." type="text"/>
+</div>
+<div class="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+<div class="flex items-center gap-2 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-text-muted whitespace-nowrap">
+<span>Status:</span>
+<select class="bg-transparent border-none p-0 text-text-main dark:text-white font-medium focus:ring-0 cursor-pointer text-sm">
+<option>All</option>
+<option>Paid</option>
+<option>In Review</option>
+</select>
+</div>
+<div class="flex items-center gap-2 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-text-muted whitespace-nowrap">
+<span>Date:</span>
+<select class="bg-transparent border-none p-0 text-text-main dark:text-white font-medium focus:ring-0 cursor-pointer text-sm">
+<option>All time</option>
+<option>This Month</option>
+<option>Last Month</option>
+</select>
+</div>
+<div class="text-sm text-text-muted whitespace-nowrap px-2 hidden lg:block">
+                        Showing 3 of 3 articles
+                    </div>
+</div>
+</div>
+<div class="space-y-6">
+<div class="journal-card bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 md:p-8 relative group">
+<div class="flex flex-wrap gap-2 absolute top-6 right-6 md:top-8 md:right-8">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Paid
+                        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-100 dark:bg-sky-900/20 dark:text-sky-400 dark:border-sky-800">
+<span class="material-symbols-outlined text-[14px]">verified</span> Reviewed
+                        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800">
+<span class="material-symbols-outlined text-[14px]">edit</span> Edited
+                        </span>
+</div>
+<div class="pr-0 md:pr-48">
+<h3 class="text-xl md:text-2xl font-display font-bold text-text-main dark:text-white mb-3 leading-snug group-hover:text-primary transition-colors">
+                            Electrodynamic analysis of microstrip antenna arrays for high-precision positioning of mobile objects via GNSS signals
+                        </h3>
+<p class="text-text-muted dark:text-gray-400 text-sm mb-6">
+                            A. V. Bogoslovsky, D. N. Borisov
+                        </p>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-100 dark:border-gray-700/50 mb-6">
+<div class="flex items-start gap-2">
+<span class="text-xs font-bold text-text-muted uppercase tracking-wide mt-0.5">Notes:</span>
+<span class="text-sm text-text-muted dark:text-gray-400">Double payment received. Author requested expedited review process for next submission.</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">edit</span> Edit
+                        </a>
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span> History
+                        </a>
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">comment</span> Comments
+                            <span class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1">2</span>
+</a>
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">move_item</span> Move
+                        </a>
+<div class="flex-grow"></div>
+<button class="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span> Delete
+                        </button>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 md:p-8 relative group">
+<div class="flex flex-wrap gap-2 absolute top-6 right-6 md:top-8 md:right-8">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Paid
+                        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-100 dark:bg-sky-900/20 dark:text-sky-400 dark:border-sky-800">
+<span class="material-symbols-outlined text-[14px]">verified</span> Reviewed
+                        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800">
+<span class="material-symbols-outlined text-[14px]">edit</span> Edited
+                        </span>
+</div>
+<div class="pr-0 md:pr-48">
+<h3 class="text-xl md:text-2xl font-display font-bold text-text-main dark:text-white mb-3 leading-snug group-hover:text-primary transition-colors">
+                            Analysis of atmospheric influence and reflective surface irregularities on radiometric characteristics of natural covers
+                        </h3>
+<p class="text-text-muted dark:text-gray-400 text-sm mb-6">
+                            V. M. Artyushenko, V. I. Volovach
+                        </p>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-100 dark:border-gray-700/50 mb-6">
+<div class="flex items-start gap-2">
+<span class="text-xs font-bold text-text-muted uppercase tracking-wide mt-0.5">Notes:</span>
+<span class="text-sm text-text-muted dark:text-gray-400">Voronezh State University. Corresponding author confirmed final proof.</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">edit</span> Edit
+                        </a>
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span> History
+                        </a>
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">comment</span> Comments
+                        </a>
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">move_item</span> Move
+                        </a>
+<div class="flex-grow"></div>
+<button class="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span> Delete
+                        </button>
+</div>
+</div>
+<div class="journal-card bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 md:p-8 relative group">
+<div class="flex flex-wrap gap-2 absolute top-6 right-6 md:top-8 md:right-8">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Paid
+                        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-100 dark:bg-sky-900/20 dark:text-sky-400 dark:border-sky-800">
+<span class="material-symbols-outlined text-[14px]">verified</span> Reviewed
+                        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800">
+<span class="material-symbols-outlined text-[14px]">edit</span> Edited
+                        </span>
+</div>
+<div class="pr-0 md:pr-48">
+<h3 class="text-xl md:text-2xl font-display font-bold text-text-main dark:text-white mb-3 leading-snug group-hover:text-primary transition-colors">
+                            Development of a novel ultra-wideband antenna for ground penetrating radar applications
+                        </h3>
+<p class="text-text-muted dark:text-gray-400 text-sm mb-6">
+                            S. K. Gupta, R. Sharma
+                        </p>
+</div>
+<div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-100 dark:border-gray-700/50 mb-6">
+<div class="flex items-start gap-2">
+<span class="text-xs font-bold text-text-muted uppercase tracking-wide mt-0.5">Notes:</span>
+<span class="text-sm text-text-muted dark:text-gray-400">Requires additional figures for high resolution print.</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">edit</span> Edit
+                        </a>
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span> History
+                        </a>
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">comment</span> Comments
+                            <span class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1">1</span>
+</a>
+<a class="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">move_item</span> Move
+                        </a>
+<div class="flex-grow"></div>
+<button class="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span> Delete
+                        </button>
+</div>
+</div>
+</div>
+<div class="mt-10 flex items-center justify-center gap-2">
+<button class="p-2 rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-muted hover:text-primary hover:border-primary transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-lg bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20">1</button>
+<button class="w-10 h-10 rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-muted hover:text-primary hover:border-primary transition-all font-medium text-sm">2</button>
+<button class="w-10 h-10 rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-muted hover:text-primary hover:border-primary transition-all font-medium text-sm">3</button>
+<span class="px-2 text-text-muted">...</span>
+<button class="p-2 rounded-lg bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-muted hover:text-primary hover:border-primary transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-white dark:bg-surface-dark border-t border-gray-100 dark:border-gray-800 pt-16 pb-12 relative z-10">
+<div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10 mb-16">
+<div class="col-span-2 lg:col-span-2 pr-8">
+<div class="flex items-center gap-2 mb-6">
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">science</span>
+</div>
+<span class="text-xl font-bold font-display text-text-main dark:text-white">SciPub</span>
+</div>
+<p class="text-text-muted dark:text-gray-400 max-w-sm mb-8 font-medium leading-relaxed">
+                        We are empowering the scientific community with friendlier tools for discovery and dissemination. Science is for everyone.
+                    </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-text-muted hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[20px]">public</span></a>
+<a class="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-text-muted hover:bg-accent hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[20px]">share</span></a>
+<a class="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-text-muted hover:bg-secondary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[20px]">mail</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-text-main dark:text-white mb-6 text-lg">Journals</h4>
+<ul class="space-y-3 text-sm font-medium text-text-muted dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Life Sciences</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Physical Sciences</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Health Sciences</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Social Sciences</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-text-main dark:text-white mb-6 text-lg">Resources</h4>
+<ul class="space-y-3 text-sm font-medium text-text-muted dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors block py-1" href="#">For Authors</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">For Editors</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">For Librarians</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Open Access Policy</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-text-main dark:text-white mb-6 text-lg">Company</h4>
+<ul class="space-y-3 text-sm font-medium text-text-muted dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Our Story</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Newsroom</a></li>
+<li><a class="hover:text-primary transition-colors block py-1" href="#">Contact Us</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm font-medium text-text-muted dark:text-gray-500">
+<p>© 2024 SciPub Inc. Crafted with care.</p>
+<div class="flex gap-8">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Cookie Settings</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

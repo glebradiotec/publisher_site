@@ -1,0 +1,24 @@
+{% extends "../base.html" %}
+{% block title %}Вход в CMS{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 400px; margin-top: 100px;">
+    <div class="card" style="padding: 32px;">
+        <h2 style="text-align: center; margin-bottom: 24px;">Вход в CMS</h2>
+
+        <form method="post">
+            <div style="margin-bottom: 16px;">
+                <label class="form-label">Логин</label>
+                <input type="text" name="username" class="form-control" required autofocus>
+            </div>
+            <div style="margin-bottom: 24px;">
+                <label class="form-label">Пароль</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

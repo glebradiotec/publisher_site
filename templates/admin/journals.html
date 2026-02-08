@@ -1,0 +1,99 @@
+{% extends "admin/base.html" %}
+{% block title %}Журналы — CMS{% endblock %}
+
+{% block admin_content %}
+<style>
+    .j-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    .j-card {
+        display: flex; gap: 14px; padding: 16px; border-radius: 12px;
+        border: 1.5px solid var(--color-border-default, #e2e8f0);
+        background: var(--color-canvas-default, #fff);
+        cursor: pointer; transition: all 0.2s;
+        text-decoration: none; color: inherit;
+    }
+    .j-card:hover {
+        border-color: #0D9488; box-shadow: 0 4px 16px rgba(13,148,136,0.1);
+        transform: translateY(-2px);
+    }
+    .j-card.inactive { opacity: 0.5; }
+    .j-card.inactive:hover { opacity: 0.8; }
+    .j-cover {
+        width: 64px; height: 84px; border-radius: 8px; object-fit: cover;
+        background: linear-gradient(135deg, #ccfbf1, #e0f2fe); flex-shrink: 0;
+    }
+    .j-cover-placeholder {
+        width: 64px; height: 84px; border-radius: 8px; flex-shrink: 0;
+        background: linear-gradient(135deg, #ccfbf1, #e0f2fe);
+        display: flex; align-items: center; justify-content: center;
+        color: #0D9488; font-size: 28px;
+    }
+    .j-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; line-height: 1.3; }
+    .j-meta { font-size: 12px; color: var(--color-fg-muted, #64748b); }
+    .j-meta span { margin-right: 10px; }
+    .j-badges { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .j-badge {
+        font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+        display: inline-flex; align-items: center; gap: 4px;
+    }
+    .j-badge-active { background: #dcfce7; color: #166534; }
+    .j-badge-hidden { background: #fee2e2; color: #991b1b; }
+    .j-badge-issues { background: #f0f9ff; color: #0369a1; }
+
+    .j-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .j-header h1 { margin: 0; font-size: 22px; }
+    .j-add-btn {
+        display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px;
+        background: #0D9488; color: #fff; border: none; border-radius: 10px;
+        font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none;
+        transition: background 0.2s;
+    }
+    .j-add-btn:hover { background: #115E59; color: #fff; }
+    .j-count { font-size: 13px; color: var(--color-fg-muted, #64748b); font-weight: 500; }
+</style>
+
+<div class="j-header">
+    <div>
+        <h1>Журналы</h1>
+        <div class="j-count">{{ journals|length }} {{ journals|length|pluralize_ru('журнал', 'журнала', 'журналов') }}</div>
+    </div>
+    <a href="/admin/journals/add" class="j-add-btn">+ Добавить журнал</a>
+</div>
+
+{% if journals %}
+<div class="j-grid">
+    {% for journal in journals %}
+    <a href="/admin/journals/{{ journal.id }}/edit" class="j-card {% if not journal.is_active %}inactive{% endif %}">
+        {% if journal.cover_image %}
+        <img src="{{ url_for('static', filename='uploads/covers/' + journal.cover_image) }}" class="j-cover" alt="">
+        {% else %}
+        <div class="j-cover-placeholder">
+            <span class="material-symbols-outlined">menu_book</span>
+        </div>
+        {% endif %}
+        <div style="flex:1; min-width:0;">
+            <div class="j-name">{{ journal.name }}</div>
+            <div class="j-meta">
+                {% if journal.issn %}<span>ISSN: {{ journal.issn }}</span>{% endif %}
+                <span>slug: {{ journal.slug }}</span>
+            </div>
+            <div class="j-badges">
+                {% if journal.is_active %}
+                <span class="j-badge j-badge-active">✓ Активен</span>
+                {% else %}
+                <span class="j-badge j-badge-hidden">✕ Скрыт</span>
+                {% endif %}
+                <span class="j-badge j-badge-issues">{{ journal.issues|length }} {{ journal.issues|length|pluralize_ru('выпуск', 'выпуска', 'выпусков') }}</span>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align:center; padding:60px 20px; color:var(--color-fg-muted, #64748b);">
+    <span class="material-symbols-outlined" style="font-size:48px; opacity:0.3; display:block; margin-bottom:12px;">library_books</span>
+    <h3 style="margin:0 0 8px;">Нет журналов</h3>
+    <p style="margin:0 0 16px;">Добавьте первый журнал</p>
+    <a href="/admin/journals/add" class="j-add-btn">+ Добавить</a>
+</div>
+{% endif %}
+{% endblock %}

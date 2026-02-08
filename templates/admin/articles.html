@@ -1,0 +1,98 @@
+{% extends "admin/base.html" %}
+{% block title %}Статьи — №{{ issue.number }}/{{ issue.year }}{% endblock %}
+
+{% block admin_content %}
+<ul class="breadcrumbs">
+    <li><a href="/admin/journals">Журналы</a></li>
+    <li><a href="/admin/journal/{{ journal.id }}/issues">{{ journal.name }}</a></li>
+    <li><span class="breadcrumb-current">№{{ issue.number }}/{{ issue.year }}</span></li>
+</ul>
+
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h1>Статьи выпуска №{{ issue.number }}/{{ issue.year }}</h1>
+        <p style="color: var(--color-fg-muted); font-size: 14px;">
+            {{ articles|length }} {{ articles|length|pluralize_ru('статья', 'статьи', 'статей') }}
+            {% if issue.is_published %}
+            · <span class="badge-published">Опубликован</span>
+            {% else %}
+            · <span class="badge-draft">Черновик</span>
+            {% endif %}
+        </p>
+    </div>
+    <a href="/admin/issues/{{ issue.id }}/articles/add" class="btn btn-primary">+ Добавить статью</a>
+</div>
+
+{% if articles %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 30px;">#</th>
+            <th>Название</th>
+            <th>Авторы</th>
+            <th>Стр.</th>
+            <th>Опубл.</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for article in articles %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+                <a href="/admin/articles/{{ article.id }}/edit" style="font-weight: 500;">{{ article.title }}</a>
+            </td>
+            <td style="font-size: 13px; color: var(--color-fg-muted);">{{ article.authors_str or '—' }}</td>
+            <td>{{ article.pages_str or '—' }}</td>
+            <td>
+                {% if article.is_published %}
+                <span class="badge-published" style="cursor: pointer;"
+                      onclick="toggleArticle({{ article.id }}, this)">Да</span>
+                {% else %}
+                <span class="badge-draft" style="cursor: pointer;"
+                      onclick="toggleArticle({{ article.id }}, this)">Нет</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="/admin/articles/{{ article.id }}/edit" class="btn btn-sm btn-secondary">Ред.</a>
+                <button class="btn btn-sm btn-danger" onclick="deleteArticle({{ article.id }})">Удалить</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <h3>Нет статей</h3>
+    <a href="/admin/issues/{{ issue.id }}/articles/add" class="btn btn-primary" style="margin-top: 12px;">+ Добавить статью</a>
+</div>
+{% endif %}
+
+<script>
+function toggleArticle(articleId, el) {
+    fetch('/admin/articles/' + articleId + '/toggle-published', { method: 'POST', credentials: 'same-origin' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success) {
+            el.className = data.is_published ? 'badge-published' : 'badge-draft';
+            el.textContent = data.is_published ? 'Да' : 'Нет';
+            el.style.cursor = 'pointer';
+        }
+    });
+}
+
+function deleteArticle(articleId) {
+    if (!confirm('Удалить статью?')) return;
+    fetch('/admin/articles/' + articleId + '/delete', {
+        method: 'POST', credentials: 'same-origin'
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success) {
+            showToast('Статья удалена', 'success');
+            setTimeout(function() { location.reload(); }, 500);
+        }
+    });
+}
+</script>
+{% endblock %}

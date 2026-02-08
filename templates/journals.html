@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% block title %}Журналы — Издательство{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Journal card hover */
+    .journal-card {
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .journal-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px -5px rgba(13, 148, 136, 0.15), 0 10px 10px -6px rgba(0, 0, 0, 0.01);
+        border-color: rgba(13, 148, 136, 0.3) !important;
+    }
+    [data-theme="dark"] .journal-card:hover {
+        box-shadow: 0 20px 40px -5px rgba(94, 234, 212, 0.12);
+        border-color: rgba(94, 234, 212, 0.3) !important;
+    }
+
+    /* Cover image — fills entire card, hidden until hover */
+    .journal-card .jt-cover {
+        opacity: 0;
+        transform: scale(1.05);
+        transition: opacity 0.6s ease, transform 0.8s ease;
+    }
+    .journal-card:hover .jt-cover {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* When cover is visible on hover, make text white */
+    .journal-card.has-cover:hover .jt-title { color: #fff !important; }
+    .journal-card.has-cover:hover .jt-issn { color: rgba(255,255,255,0.7) !important; }
+    .journal-card.has-cover:hover .jt-desc { color: rgba(255,255,255,0.8) !important; }
+    .journal-card.has-cover:hover .jt-stats { color: rgba(255,255,255,0.7) !important; }
+    .journal-card.has-cover:hover .jt-visit { color: #fff !important; }
+    .journal-card.has-cover:hover .jt-sep { border-color: rgba(255,255,255,0.15) !important; }
+    .journal-card.has-cover:hover .jt-badge { background: rgba(255,255,255,0.2) !important; color: #fff !important; backdrop-filter: blur(8px); }
+    .journal-card.has-cover:hover .jt-icon-wrap { background: rgba(255,255,255,0.15) !important; backdrop-filter: blur(8px); border-color: rgba(255,255,255,0.2) !important; box-shadow: none !important; }
+    .journal-card.has-cover:hover .jt-icon { -webkit-text-fill-color: #fff !important; }
+    .journal-card.has-cover:hover .jt-blob { opacity: 0 !important; }
+    .journal-card.has-cover:hover .jt-dot { background: rgba(255,255,255,0.6) !important; }
+
+    /* Glass panel */
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    [data-theme="dark"] .glass-panel {
+        background: rgba(30, 41, 59, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Icon wrap hover scale */
+    .journal-card:hover .jt-icon-wrap {
+        transform: scale(1.05);
+    }
+    .jt-icon-wrap {
+        transition: all 0.3s ease;
+    }
+
+    /* Search glow */
+    .search-glow {
+        position: absolute;
+        inset: -2px;
+        background: linear-gradient(to right, rgba(13,148,136,0.3), rgba(14,165,233,0.3));
+        border-radius: 0.75rem;
+        filter: blur(6px);
+        opacity: 0.3;
+        transition: opacity 0.5s;
+    }
+    .search-wrap:hover .search-glow,
+    .search-wrap:focus-within .search-glow {
+        opacity: 0.6;
+    }
+</style>
+
+{# ====== Color palettes for journal cards ====== #}
+{% set palettes = [
+    {'bg': 'teal',   'from': 'from-primary',      'to': 'to-accent',        'hover': 'group-hover:text-primary',    'blob': 'from-soft-teal/50'},
+    {'bg': 'blue',   'from': 'from-blue-500',      'to': 'to-indigo-500',    'hover': 'group-hover:text-accent',     'blob': 'from-soft-blue/50'},
+    {'bg': 'cyan',   'from': 'from-secondary',      'to': 'to-teal-500',      'hover': 'group-hover:text-secondary',  'blob': 'from-soft-cyan/50'},
+    {'bg': 'purple', 'from': 'from-purple-500',    'to': 'to-indigo-500',    'hover': 'group-hover:text-purple-600', 'blob': 'from-purple-100/50'},
+    {'bg': 'sky',    'from': 'from-sky-500',        'to': 'to-primary',        'hover': 'group-hover:text-sky-600',    'blob': 'from-sky-100/50'},
+    {'bg': 'indigo', 'from': 'from-indigo-500',    'to': 'to-purple-500',    'hover': 'group-hover:text-indigo-600', 'blob': 'from-indigo-100/50'},
+    {'bg': 'orange', 'from': 'from-orange-500',    'to': 'to-red-500',        'hover': 'group-hover:text-orange-600', 'blob': 'from-orange-100/50'},
+    {'bg': 'green',  'from': 'from-green-500',      'to': 'to-teal-500',      'hover': 'group-hover:text-green-600',  'blob': 'from-green-100/50'},
+    {'bg': 'rose',   'from': 'from-rose-500',      'to': 'to-red-500',        'hover': 'group-hover:text-rose-600',   'blob': 'from-rose-100/50'},
+    {'bg': 'amber',  'from': 'from-amber-500',      'to': 'to-yellow-500',    'hover': 'group-hover:text-amber-600',  'blob': 'from-amber-100/50'},
+] %}
+
+{# Per-journal icon overrides (by slug) #}
+{% set journal_icons = {
+    'radioengineering': 'radar',
+    'antennas': 'settings_input_antenna',
+    'electromagnetic_waves_and_electronic_systems': 'sensors',
+    'biomedical_radioelectronics': 'biotech',
+    'neurocomputers': 'memory',
+    'science_intensive_technologies': 'rocket_launch',
+    'nonlinear_world': 'waves',
+    'satellite_communication_and_broadcasting_systems': 'satellite_alt',
+    'technologies_of_living_systems': 'eco',
+    'highly_available_systems': 'cloud_done',
+    'achievements_of_modern_radioelectronics': 'electric_bolt',
+    'information-measuring_and_control_systems': 'speed',
+    'nanotechnology_development_and_applications-xxi_ce': 'science',
+    'dynamics_of_difficult_systems': 'hub',
+} %}
+{% set default_icons = ['water_drop', 'terminal', 'psychology', 'biotech', 'science', 'hub', 'cell_tower', 'satellite_alt', 'memory', 'eco'] %}
+
+<!-- =============================================
+     PAGE HEADER
+     ============================================= -->
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 mb-12">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+        <div>
+            <!-- Breadcrumbs -->
+            <div class="flex items-center gap-2 mb-2">
+                <a class="text-sm text-text-muted hover:text-primary transition-colors no-underline" href="/">Главная</a>
+                <span class="text-text-muted/50">/</span>
+                <span class="text-sm font-semibold text-primary">Журналы</span>
+            </div>
+            <h1 class="font-display text-4xl md:text-5xl font-bold text-text-main [data-theme=dark]:text-white m-0">
+                Наши журналы
+                <span class="bg-primary/10 text-primary text-xl px-3 py-1 rounded-full align-middle ml-2 font-body">{{ journals|length }}</span>
+            </h1>
+        </div>
+
+        <!-- Search / filter -->
+        <div class="w-full md:w-auto">
+            <div class="search-wrap relative min-w-[300px]">
+                <div class="search-glow"></div>
+                <div class="relative flex items-center bg-white [data-theme=dark]:bg-surface-dark rounded-xl shadow-sm border border-gray-100 [data-theme=dark]:border-gray-700">
+                    <div class="pl-3 text-text-muted">
+                        <span class="material-symbols-outlined text-[20px]">search</span>
+                    </div>
+                    <input id="journal-filter" class="w-full border-none bg-transparent px-3 py-2.5 text-sm text-text-main [data-theme=dark]:text-white placeholder-text-muted/60 focus:ring-0 focus:outline-none font-medium"
+                           placeholder="Фильтр по названию или ISSN..." type="text" autocomplete="off">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="glass-panel rounded-2xl p-6 shadow-sm">
+        <div class="flex flex-wrap items-center gap-6 md:gap-12 text-sm font-medium text-text-muted [data-theme=dark]:text-gray-300">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">library_books</span>
+                <span class="text-text-main [data-theme=dark]:text-white font-bold">{{ journals|length }}</span> {{ journals|length|pluralize_ru('журнал', 'журнала', 'журналов') }}
+            </div>
+            <div class="w-px h-4 bg-gray-300 [data-theme=dark]:bg-gray-600 hidden md:block"></div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-accent">article</span>
+                <span class="text-text-main [data-theme=dark]:text-white font-bold">{{ total_articles if total_articles is defined else '—' }}</span> статей
+            </div>
+            <div class="w-px h-4 bg-gray-300 [data-theme=dark]:bg-gray-600 hidden md:block"></div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary">check_circle</span>
+                <span>Рецензирование</span>
+            </div>
+            <div class="w-px h-4 bg-gray-300 [data-theme=dark]:bg-gray-600 hidden md:block"></div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-teal-500">lock_open</span>
+                <span>Открытый доступ</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =============================================
+     JOURNALS GRID (2 columns)
+     ============================================= -->
+{% if journals %}
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+    <div id="journals-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        {% for journal in journals %}
+        {% set ci = loop.index0 % palettes|length %}
+        {% set pal = palettes[ci] %}
+        {% set has_cover = journal.bg_image %}
+        {# Pick icon: custom mapping first, then default rotation #}
+        {% set icon = journal_icons.get(journal.slug) %}
+        {% if not icon %}
+            {% for slug_part, ico in journal_icons.items() %}
+                {% if slug_part in journal.slug and not icon %}
+                    {% set icon = ico %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% if not icon %}{% set icon = default_icons[ci] %}{% endif %}
+
+        <a href="/journal/{{ journal.slug }}" class="no-underline" style="color:inherit; text-decoration:none;"
+           data-name="{{ journal.name|lower }}" data-issn="{{ journal.issn|lower if journal.issn else '' }}">
+            <div class="journal-card group {% if has_cover %}has-cover{% endif %} bg-white [data-theme=dark]:bg-surface-dark rounded-2xl border border-teal-100 [data-theme=dark]:border-gray-800 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden">
+
+                <!-- Gradient blob (top-right) -->
+                <div class="jt-blob absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl {{ pal.blob }} to-transparent rounded-bl-full opacity-50 [data-theme=dark]:opacity-20 pointer-events-none transition-opacity duration-500"></div>
+
+                <!-- Cover overlay — hidden, appears on hover -->
+                {% if has_cover %}
+                <div class="jt-cover absolute inset-0 z-0 overflow-hidden rounded-2xl">
+                    <img src="{{ url_for('static', filename='uploads/covers/' + journal.bg_image) }}"
+                         alt="" style="width:100%; height:100%; object-fit:cover;" loading="lazy">
+                    <div style="position:absolute; inset:0; background:linear-gradient(135deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.35) 100%);"></div>
+                </div>
+                {% endif %}
+
+                <!-- Icon -->
+                <div class="shrink-0 relative z-10">
+                    <div class="jt-icon-wrap w-20 h-20 rounded-2xl bg-gradient-to-br from-{{ pal.bg }}-50 to-white [data-theme=dark]:from-gray-800 [data-theme=dark]:to-surface-dark shadow-inner border border-{{ pal.bg }}-50 [data-theme=dark]:border-gray-700 flex items-center justify-center">
+                        <span class="jt-icon material-symbols-outlined text-4xl text-transparent bg-clip-text bg-gradient-to-br {{ pal.from }} {{ pal.to }}">{{ icon }}</span>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="flex-grow flex flex-col relative z-10">
+                    <div class="flex justify-between items-start mb-1">
+                        <h3 class="jt-title font-display text-xl font-bold text-text-main [data-theme=dark]:text-white transition-colors duration-300 m-0"
+                            style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                            {{ journal.name }}
+                        </h3>
+                    </div>
+
+                    {% if journal.issn %}
+                    <p class="jt-issn text-xs font-mono text-text-muted mb-3 m-0" style="letter-spacing:0.02em;">
+                        ISSN: {{ journal.issn }}{% if journal.eissn %} · eISSN: {{ journal.eissn }}{% endif %}
+                    </p>
+                    {% endif %}
+
+                    {% if journal.description %}
+                    <p class="jt-desc text-sm text-text-muted [data-theme=dark]:text-gray-400 mb-6 m-0 leading-relaxed"
+                       style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                        {{ journal.description }}
+                    </p>
+                    {% endif %}
+
+                    <!-- Stats footer -->
+                    <div class="jt-sep mt-auto pt-4 border-t border-gray-100 [data-theme=dark]:border-gray-700/50 flex items-center gap-4 text-xs font-medium text-text-muted transition-colors duration-300">
+                        <span class="jt-stats flex items-center gap-1.5">
+                            <span class="jt-dot w-1.5 h-1.5 rounded-full bg-accent"></span>
+                            {{ journal.published_issues_count }}
+                            {{ journal.published_issues_count|pluralize_ru('выпуск', 'выпуска', 'выпусков') }}
+                        </span>
+                        {% if journal.articles_count %}
+                        <span class="jt-stats flex items-center gap-1.5">
+                            <span class="jt-dot w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            {{ journal.articles_count }}
+                            {{ journal.articles_count|pluralize_ru('статья', 'статьи', 'статей') }}
+                        </span>
+                        {% endif %}
+                        <div class="ml-auto">
+                            <span class="jt-visit text-primary font-bold flex items-center gap-1 transition-colors duration-300">
+                                Открыть <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% else %}
+
+<!-- Empty state -->
+<section class="py-24 text-center">
+    <div class="max-w-md mx-auto">
+        <span class="material-symbols-outlined" style="font-size:64px; color:rgba(100,116,139,0.3); margin-bottom:16px;">library_books</span>
+        <h3 class="text-xl font-bold text-text-main [data-theme=dark]:text-white mb-2 m-0">Журналы не найдены</h3>
+        <p class="text-text-muted m-0">Каталог пока пуст. Загляните позже!</p>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Quick filter by name or ISSN
+(function(){
+    var input = document.getElementById('journal-filter');
+    if (!input) return;
+    var cards = document.querySelectorAll('#journals-grid > a');
+    input.addEventListener('input', function(){
+        var q = this.value.toLowerCase().trim();
+        cards.forEach(function(card){
+            var name = card.dataset.name || '';
+            var issn = card.dataset.issn || '';
+            if (!q || name.indexOf(q) !== -1 || issn.indexOf(q) !== -1) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+})();
+</script>
+{% endblock %}

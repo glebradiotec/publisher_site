@@ -11,3 +11,5 @@ static/uploads/pdfs/*
 Old/
 venv/
 .venv/
+tailwindcss.exe
+static/src/

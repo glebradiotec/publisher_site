@@ -4,6 +4,7 @@ from pathlib import Path
 from flask import Flask, redirect, url_for, request
 from flask_compress import Compress
 from flask_login import LoginManager, current_user
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from models import db, User, Journal, Issue, Article
 from routes_public import register_public_routes
@@ -17,6 +18,7 @@ BASE_DIR = Path(__file__).parent
 
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 Compress(app)  # Gzip/Brotli сжатие
 
 # Настройки
